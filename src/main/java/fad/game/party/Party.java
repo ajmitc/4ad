@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Party {
-    private List<Hero> heroes = new ArrayList<>(4);
+    private final List<Hero> heroes = new ArrayList<>(4);
 
     public Party(){
         heroes.add(new Hero());
@@ -17,4 +17,14 @@ public class Party {
         return heroes;
     }
 
+    public void setType(Hero hero, HeroType type){
+        hero.setType(type);
+
+        switch(type){
+            case WARRIOR:
+                hero.setAttackType(AttackType.D6_PLUS_LEVEL);
+                break;
+            // TODO Set other Hero Type attributes here
+        }
+    }
 }

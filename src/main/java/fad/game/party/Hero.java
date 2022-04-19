@@ -9,12 +9,17 @@ public class Hero {
     private String name;
     private HeroType type;
     private AttackType attackType;
+    private DefenseType defenseType;
     private List<Equipment> inventory = new ArrayList<>();
     private Equipment oneHandWeapon1;
     private Equipment oneHandWeapon2;
     private Equipment twoHandedWeapon;
     private Equipment backSlingWeapon;
     private Equipment armor;
+    private int gold;
+    private int level;
+    //private List<Clue> clues = new ArrayList<>();
+    //private List<Ability> abilities = new ArrayList<>();
 
     public Hero(){
 
@@ -86,5 +91,29 @@ public class Hero {
 
     public void setArmor(Equipment armor) {
         this.armor = armor;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
+
+    public DefenseType getDefenseType() {
+        return defenseType;
+    }
+
+    public void setDefenseType(DefenseType defenseType) {
+        this.defenseType = defenseType;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

@@ -5,7 +5,9 @@ public enum EquipmentType {
     TWO_HAND_WEAPON("Two-handed weapon"),
     LIGHT_ARMOR("Light Armor"),
     HEAVY_ARMOR("Heavy Armor"),
-    LANTERN("Lantern");
+    LANTERN("Lantern"),
+    BANDAGES("Bandages"),
+    HOLY_WATER_VIAL("Holy Water Vial");
 
     private String name;
     EquipmentType(String n){

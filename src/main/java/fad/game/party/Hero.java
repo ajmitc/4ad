@@ -1,25 +1,27 @@
 package fad.game.party;
 
 import fad.game.equipment.Equipment;
+import fad.game.equipment.Weapon;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Hero {
-    private String name;
-    private HeroType type;
-    private AttackType attackType;
-    private DefenseType defenseType;
-    private List<Equipment> inventory = new ArrayList<>();
-    private Equipment oneHandWeapon1;
-    private Equipment oneHandWeapon2;
-    private Equipment twoHandedWeapon;
-    private Equipment backSlingWeapon;
-    private Equipment armor;
-    private int gold;
-    private int level;
-    //private List<Clue> clues = new ArrayList<>();
-    //private List<Ability> abilities = new ArrayList<>();
+    protected String name;
+    protected HeroType type;
+    protected AttackType attackType;
+    protected DefenseType defenseType;
+    protected List<Equipment> inventory = new ArrayList<>();
+    protected Weapon oneHandWeapon1;
+    protected Weapon oneHandWeapon2;
+    protected Weapon twoHandedWeapon;
+    protected Weapon backSlingWeapon;
+    protected Equipment armor;
+    protected int gold;
+    protected int level = 1;
+    protected int lifePoints;
+    //protected List<Clue> clues = new ArrayList<>();
+    //protected List<Ability> abilities = new ArrayList<>();
 
     public Hero(){
 
@@ -57,7 +59,7 @@ public class Hero {
         return oneHandWeapon1;
     }
 
-    public void setOneHandWeapon1(Equipment oneHandWeapon1) {
+    public void setOneHandWeapon1(Weapon oneHandWeapon1) {
         this.oneHandWeapon1 = oneHandWeapon1;
     }
 
@@ -65,7 +67,7 @@ public class Hero {
         return oneHandWeapon2;
     }
 
-    public void setOneHandWeapon2(Equipment oneHandWeapon2) {
+    public void setOneHandWeapon2(Weapon oneHandWeapon2) {
         this.oneHandWeapon2 = oneHandWeapon2;
     }
 
@@ -73,7 +75,7 @@ public class Hero {
         return twoHandedWeapon;
     }
 
-    public void setTwoHandedWeapon(Equipment twoHandedWeapon) {
+    public void setTwoHandedWeapon(Weapon twoHandedWeapon) {
         this.twoHandedWeapon = twoHandedWeapon;
     }
 
@@ -81,7 +83,7 @@ public class Hero {
         return backSlingWeapon;
     }
 
-    public void setBackSlingWeapon(Equipment backSlingWeapon) {
+    public void setBackSlingWeapon(Weapon backSlingWeapon) {
         this.backSlingWeapon = backSlingWeapon;
     }
 
@@ -115,5 +117,19 @@ public class Hero {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public int getLifePoints() {
+        return lifePoints;
+    }
+
+    public void setLifePoints(int lifePoints) {
+        this.lifePoints = lifePoints;
+        if (this.lifePoints < 0)
+            this.lifePoints = 0;
+    }
+
+    public void adjLifePoints(int amount) {
+        setLifePoints(this.lifePoints + amount);
     }
 }

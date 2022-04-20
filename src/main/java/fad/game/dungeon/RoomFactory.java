@@ -37,12 +37,16 @@ public class RoomFactory {
         switch(id){
             case 1:
                 return new String[]{
-                    "##d##",
-                    "## ##",
-                    "## ##",
-                    "## ##",
-                    "## ##",
-                    "##d##"
+                    "   ^   ",
+                    "v  v  v",
+                };
+            case 2:
+                return new String[]{
+                        "  ^  ",
+                        "<    ",
+                        "    v",
+                        "## # ",
+                        "## #",
                 };
         }
         return new String[]{};

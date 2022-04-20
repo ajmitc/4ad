@@ -2,6 +2,7 @@ package fad.game.party;
 
 public enum HeroType {
     BARBARIAN("Barbarian"),
+    CLERIC("Cleric"),
     DWARF("Dwarf"),
     ELF("Elf"),
     HALFLING("Halfling"),

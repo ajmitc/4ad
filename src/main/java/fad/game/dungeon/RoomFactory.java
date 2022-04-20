@@ -27,8 +27,12 @@ public class RoomFactory {
 
     /**
      * #: wall
-     * d: door
-     *  : open space
+     * ^: door going up
+     * v: door going down 
+     * <: door going left
+ >: door going right
+  : open type
+ c: connection point to another room
      * 
      * @param id
      * @return 
@@ -37,16 +41,26 @@ public class RoomFactory {
         switch(id){
             case 1:
                 return new String[]{
-                    "   ^   ",
-                    "v  v  v",
+                    "#d##d##d#",
+                    "#       #",
+                    "#       #",
+                    "####d####",
                 };
             case 2:
                 return new String[]{
-                        "  ^  ",
-                        "<    ",
-                        "    v",
-                        "## # ",
-                        "## #",
+                    "  #h#",
+                    "#d# ###",
+                    "#     #",
+                    "d     #",
+                    "#     #",
+                    "###d###",
+                };
+            case 3:
+                return new String[]{
+                    "#h##h##h#",
+                    "#       #",
+                    "#       #",
+                    "####h####",
                 };
         }
         return new String[]{};
@@ -64,21 +78,24 @@ public class RoomFactory {
 
     private static Room def2Room(String[] def){
         Room room = new Room();
-        for (int r = 0; r < def.length; ++r){
+        for (int r = def.length - 1; r >= 0; --r){
             List<RoomSpace> row = new ArrayList<>();
             room.getSpaces().add(row);
 
             for (int c = 0; c < def[r].length(); ++c){
-                RoomSpace space = RoomSpace.OPEN;
+                RoomSpaceType type = RoomSpaceType.OPEN;
                 switch(def[r].charAt(c)){
                     case '#':
-                        space = RoomSpace.WALL;
+                        type = RoomSpaceType.WALL;
                         break;
                     case 'd':
-                        space = RoomSpace.DOOR;
+                        type = RoomSpaceType.DOOR;
+                        break;
+                    case 'h':
+                        type = RoomSpaceType.HALLWAY;
                         break;
                 }
-                row.add(space);
+                row.add(new RoomSpace(type));
             }
         }
         return room;

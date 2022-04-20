@@ -16,6 +16,10 @@ public class Equipment {
     //   May not be re-assigned to another Hero if wearer dies
     private EquipmentWeight weight = EquipmentWeight.NORMAL;
 
+    // Number of times this item can be used before it is discarded
+    // A value of -1 is permanent
+    private int numUses = -1;
+
     public Equipment(){}
 
     public Equipment(String name, EquipmentType type){
@@ -50,5 +54,29 @@ public class Equipment {
 
     public void setRanged(boolean ranged) {
         this.ranged = ranged;
+    }
+
+    public int getNumSlotUsage() {
+        return numSlotUsage;
+    }
+
+    public void setNumSlotUsage(int numSlotUsage) {
+        this.numSlotUsage = numSlotUsage;
+    }
+
+    public EquipmentWeight getWeight() {
+        return weight;
+    }
+
+    public void setWeight(EquipmentWeight weight) {
+        this.weight = weight;
+    }
+
+    public int getNumUses() {
+        return numUses;
+    }
+
+    public void setNumUses(int numUses) {
+        this.numUses = numUses;
     }
 }

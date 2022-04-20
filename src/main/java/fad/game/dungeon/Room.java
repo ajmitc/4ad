@@ -3,6 +3,7 @@ package fad.game.dungeon;
 import fad.game.chart.RoomContents;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Room {
     private boolean corridor;
@@ -27,5 +28,9 @@ public class Room {
 
     public List<List<RoomSpace>> getSpaces() {
         return spaces;
+    }
+
+    public List<RoomSpace> getAllSpaces() {
+        return spaces.stream().flatMap(List<RoomSpace>::stream).collect(Collectors.toList());
     }
 }

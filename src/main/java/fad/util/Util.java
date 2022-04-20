@@ -22,8 +22,16 @@ public class Util {
         return nextInt(1, 6);
     }
 
+    public static int roll(int numDice){
+        return nextInt(numDice, 6 * numDice);
+    }
+
     public static int roll2d6(){
-        return nextInt(2, 12);
+        return roll(2);
+    }
+
+    public static int roll3d6(){
+        return roll(3);
     }
 
     public static int rolld66(){

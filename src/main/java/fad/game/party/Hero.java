@@ -2,6 +2,7 @@ package fad.game.party;
 
 import fad.game.equipment.Equipment;
 import fad.game.equipment.Weapon;
+import fad.game.spell.Spell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,9 @@ public class Hero {
     protected int lifePoints;
     //protected List<Clue> clues = new ArrayList<>();
     //protected List<Ability> abilities = new ArrayList<>();
+
+    protected List<Spell> readiedSpells = new ArrayList<>();
+    protected int maxReadiedSpells = 0;
 
     public Hero(){
 
@@ -101,6 +105,12 @@ public class Hero {
 
     public void setGold(int gold) {
         this.gold = gold;
+        if (this.gold < 0)
+            this.gold = 0;
+    }
+
+    public void adjGold(int amount) {
+        setGold(gold + amount);
     }
 
     public DefenseType getDefenseType() {
@@ -131,5 +141,17 @@ public class Hero {
 
     public void adjLifePoints(int amount) {
         setLifePoints(this.lifePoints + amount);
+    }
+
+    public List<Spell> getReadiedSpells() {
+        return readiedSpells;
+    }
+
+    public int getMaxReadiedSpells() {
+        return maxReadiedSpells;
+    }
+
+    public void setMaxReadiedSpells(int maxReadiedSpells) {
+        this.maxReadiedSpells = maxReadiedSpells;
     }
 }

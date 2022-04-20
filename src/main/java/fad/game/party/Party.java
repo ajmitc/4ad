@@ -19,6 +19,10 @@ public class Party {
         return heroes;
     }
 
+    public int size(){
+        return heroes.size();
+    }
+
     public Hero createHero(HeroType type){
         if (heroes.size() == 4)
             return null;

@@ -21,19 +21,18 @@ public class RoomFactory {
         int v = Util.roll();
         String[] def = getEntranceRoomDefinition(v);
         Room room = def2Room(def);
-        // TODO Set corridor value
+        // Set corridor value
+        if (v == 3 || v == 5)
+            room.setCorridor(true);
         return room;
     }
 
     /**
      * #: wall
-     * ^: door going up
-     * v: door going down 
-     * <: door going left
- >: door going right
-  : open type
- c: connection point to another room
-     * 
+     *  : open type
+     * d: door (connection point)
+     * h: hallway (connection point)
+     *
      * @param id
      * @return 
      */
@@ -58,9 +57,33 @@ public class RoomFactory {
             case 3:
                 return new String[]{
                     "#h##h##h#",
-                    "#       #",
+                    "# ## ## #",
                     "#       #",
                     "####h####",
+                };
+            case 4:
+                return new String[]{
+                        "#h###h#",
+                        "# ### #",
+                        "#     #",
+                        "## h ##",
+                };
+            case 5:
+                return new String[]{
+                        "##h##",
+                        "## ##",
+                        "h   h",
+                        "## ##",
+                        "##h##",
+                };
+            case 6:
+                return new String[]{
+                        "#######",
+                        "h     h",
+                        "###  ##",
+                        "##   ##",
+                        "##   ##",
+                        "###d ##",
                 };
         }
         return new String[]{};
@@ -70,7 +93,59 @@ public class RoomFactory {
         switch(id){
             case 11:
                 return new String[]{
-                    ""
+                        "###",
+                        "# d",
+                        "# #",
+                        "d #",
+                        "# #",
+                        "#h#",
+                };
+            case 12:
+                return new String[]{
+                        "#d#",
+                        "# #",
+                        "# #",
+                        "# #",
+                        "#d#",
+                };
+            case 13:
+                return new String[]{
+                        "##d##",
+                        "d   #",
+                        "### #",
+                        "### #",
+                        "#   #",
+                        "# ###",
+                        "#   h",
+                        "#####",
+                };
+            case 14:
+                return new String[]{
+                        "###",
+                        "h d",
+                        "# #",
+                        "# #",
+                        "# #",
+                        "# #",
+                        "d h",
+                        "###",
+                };
+            case 15:
+                return new String[]{
+                        "#d##",
+                        "#  ###",
+                        "#    #",
+                        "d    #",
+                        "####d#",
+                };
+            case 16:
+                return new String[]{
+                        "##d##",
+                        "#   #",
+                        "#   #",
+                        "## ##",
+                        " # # ",
+                        " #h# ",
                 };
         }
         return new String[]{};

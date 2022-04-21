@@ -1,5 +1,6 @@
 package fad;
 
+import fad.game.Game;
 import fad.game.Phase;
 import fad.game.PhaseStep;
 import fad.game.chart.MonsterTable;
@@ -24,6 +25,8 @@ import fad.monster.Boss;
 import fad.monster.Minion;
 import fad.util.Util;
 import fad.view.View;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Controller {
     private Model model;
@@ -32,6 +35,23 @@ public class Controller {
     public Controller(Model model, View view){
         this.model = model;
         this.view = view;
+
+        view.getMainMenuPanel().getBtnExit().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                System.exit(0);
+            }
+        });
+
+        view.getMainMenuPanel().getBtnNewGame().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                Game game = new Game();
+                model.setGame(game);
+                view.showGame();
+                run();
+            }
+        });
     }
 
     public void run(){
@@ -80,7 +100,8 @@ public class Controller {
         Room entrance = RoomFactory.createEntranceRoom();
         model.getGame().getDungeon().getRooms().add(entrance);
 
-        // TODO Add rooms off all entrance connection points
+        // Add rooms off all entrance connection points
+        model.getGame().getDungeon().addConnectingRooms(entrance);
     }
 
     public void goThroughDoor(){

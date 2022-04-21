@@ -34,11 +34,16 @@ public class Dwarf extends Hero{
         type = HeroType.DWARF;
         attackType = AttackType.D6_PLUS_LEVEL;
         defenseType = DefenseType.D6;
-        oneHandWeapon1 = new Weapon(EquipmentType.ONE_HAND_WEAPON.getName(), EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING);
-        oneHandWeapon2 = new Weapon(EquipmentType.SHIELD.getName(), EquipmentType.SHIELD, null);
+        hand1 = new Weapon(EquipmentType.ONE_HAND_WEAPON.getName(), EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING);
+        hand2 = new Weapon(EquipmentType.SHIELD.getName(), EquipmentType.SHIELD, null);
         armor = new Equipment("Light Armor", EquipmentType.LIGHT_ARMOR);
         gold = Util.roll3d6();
         level = 1;
         lifePoints = 5 + level;
+    }
+
+    @Override
+    public int getMaxLifePoints(){
+        return 5 + level;
     }
 }

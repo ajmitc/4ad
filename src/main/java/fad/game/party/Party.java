@@ -32,8 +32,8 @@ public class Party {
             case WARRIOR: {
                 hero = new Warrior();
                 hero.setAttackType(AttackType.D6_PLUS_LEVEL);
-                hero.setOneHandWeapon1(new Weapon("Sword", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING));
-                hero.setOneHandWeapon2(new Weapon("Shield", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.CRUSHING));
+                hero.setHand1(new Weapon("Sword", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING));
+                hero.setHand2(new Weapon("Shield", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.CRUSHING));
                 hero.setArmor(new Equipment("Light Armor", EquipmentType.LIGHT_ARMOR));
                 hero.setGold(Util.roll2d6());
                 hero.setLifePoints(6 + hero.getLevel());

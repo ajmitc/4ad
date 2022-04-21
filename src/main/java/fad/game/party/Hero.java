@@ -1,22 +1,20 @@
 package fad.game.party;
 
 import fad.game.equipment.Equipment;
-import fad.game.equipment.Weapon;
 import fad.game.spell.Spell;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hero {
+public abstract class Hero {
     protected String name;
     protected HeroType type;
     protected AttackType attackType;
     protected DefenseType defenseType;
     protected List<Equipment> inventory = new ArrayList<>();
-    protected Weapon oneHandWeapon1;
-    protected Weapon oneHandWeapon2;
-    protected Weapon twoHandedWeapon;
-    protected Weapon backSlingWeapon;
+    protected Equipment hand1;
+    protected Equipment hand2;
+    protected Equipment backSlingItem;
     protected Equipment armor;
     protected int gold;
     protected int level = 1;
@@ -59,36 +57,28 @@ public class Hero {
         return inventory;
     }
 
-    public Equipment getOneHandWeapon1() {
-        return oneHandWeapon1;
+    public Equipment getHand1() {
+        return hand1;
     }
 
-    public void setOneHandWeapon1(Weapon oneHandWeapon1) {
-        this.oneHandWeapon1 = oneHandWeapon1;
+    public void setHand1(Equipment hand1) {
+        this.hand1 = hand1;
     }
 
-    public Equipment getOneHandWeapon2() {
-        return oneHandWeapon2;
+    public Equipment getHand2() {
+        return hand2;
     }
 
-    public void setOneHandWeapon2(Weapon oneHandWeapon2) {
-        this.oneHandWeapon2 = oneHandWeapon2;
+    public void setHand2(Equipment hand2) {
+        this.hand2 = hand2;
     }
 
-    public Equipment getTwoHandedWeapon() {
-        return twoHandedWeapon;
+    public Equipment getBackSlingItem() {
+        return backSlingItem;
     }
 
-    public void setTwoHandedWeapon(Weapon twoHandedWeapon) {
-        this.twoHandedWeapon = twoHandedWeapon;
-    }
-
-    public Equipment getBackSlingWeapon() {
-        return backSlingWeapon;
-    }
-
-    public void setBackSlingWeapon(Weapon backSlingWeapon) {
-        this.backSlingWeapon = backSlingWeapon;
+    public void setBackSlingItem(Equipment backSlingItem) {
+        this.backSlingItem = backSlingItem;
     }
 
     public Equipment getArmor() {
@@ -137,11 +127,15 @@ public class Hero {
         this.lifePoints = lifePoints;
         if (this.lifePoints < 0)
             this.lifePoints = 0;
+        if (this.lifePoints > getMaxLifePoints())
+            this.lifePoints = getMaxLifePoints();
     }
 
     public void adjLifePoints(int amount) {
         setLifePoints(this.lifePoints + amount);
     }
+
+    public abstract int getMaxLifePoints();
 
     public List<Spell> getReadiedSpells() {
         return readiedSpells;

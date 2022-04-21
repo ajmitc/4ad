@@ -10,4 +10,8 @@ package fad.game.party;
  * Life: 3 + level.
  */
 public class Rogue extends Hero{
+    @Override
+    public int getMaxLifePoints(){
+        return 3 + level;
+    }
 }

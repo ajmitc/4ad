@@ -1,6 +1,6 @@
 package fad.game.equipment;
 
-import fad.game.chart.Treasure;
+import fad.game.reward.Treasure;
 
 /**
  *

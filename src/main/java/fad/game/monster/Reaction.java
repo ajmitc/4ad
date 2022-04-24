@@ -1,4 +1,4 @@
-package fad.monster;
+package fad.game.monster;
 
 /**
  *
@@ -29,6 +29,8 @@ public enum Reaction {
     // Accept: Roll on Quest table, complete quest, then return to same room and roll on Epic Rewards table
     // Refuse: Monster leaves
     QUEST("Quest"),
+    // All heros can attack at +2 on their first attack
+    SLEEPING("Sleeping"),
     SPECIAL("Special");
     
     private String name;

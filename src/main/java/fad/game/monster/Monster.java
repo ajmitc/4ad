@@ -1,6 +1,6 @@
-package fad.monster;
+package fad.game.monster;
 
-import fad.game.chart.Treasure;
+import fad.game.reward.Treasure;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,17 +18,32 @@ public abstract class Monster {
     // You must roll 4+ to defend against it
     protected int level = 1;
 
+    // Number of times this monster can be hit before dying
     protected int hitpoints = 1;
+
+    // Number of attacks this monster can make
+    protected int numAttacks = 1;
+
+    // Number of points of damage inflicted on hero by each attack
+    protected int numDamagePerAttack = 1;
 
     protected Set<MonsterTrait> traits = new HashSet<>();
 
-    protected Treasure treasure;
+    // Treasure dropped by this monster. If null, no treasure.
+    protected List<Treasure> treasure = new ArrayList<>();
 
     // Roll 1d6 and return Reaction at that index
     protected List<Reaction> reactionChoices = new ArrayList<>();
     protected Reaction reaction;
 
     protected int poisonLevel = 0;
+    protected int fireBreathLevel = 0;
+
+    // Number of GP to demand for a bribe
+    // If number is -1, then roll d6 GP per monster
+    // If number is -2, roll 6d6 GP
+    // If number is -3, All gold of the party, with minimum of 100 GP or one magic item
+    protected int bribeAmountPerMonster = 0;
 
 
     public Monster(MonsterType type){
@@ -71,12 +86,12 @@ public abstract class Monster {
         traits.add(trait);
     }
 
-    public Treasure getTreasure() {
+    public List<Treasure> getTreasure() {
         return treasure;
     }
 
-    public void setTreasure(Treasure treasure) {
-        this.treasure = treasure;
+    public void addTreasure(Treasure treasure) {
+        this.treasure.add(treasure);
     }
 
     public List<Reaction> getReactionChoices() {
@@ -102,4 +117,37 @@ public abstract class Monster {
     public void setPoisonLevel(int poisonLevel) {
         this.poisonLevel = poisonLevel;
     }
+
+    public int getBribeAmountPerMonster() {
+        return bribeAmountPerMonster;
+    }
+
+    public void setBribeAmountPerMonster(int bribeAmountPerMonster) {
+        this.bribeAmountPerMonster = bribeAmountPerMonster;
+    }
+
+    public int getNumAttacks() {
+        return numAttacks;
+    }
+
+    public void setNumAttacks(int numAttacks) {
+        this.numAttacks = numAttacks;
+    }
+
+    public int getNumDamagePerAttack() {
+        return numDamagePerAttack;
+    }
+
+    public void setNumDamagePerAttack(int numDamagePerAttack) {
+        this.numDamagePerAttack = numDamagePerAttack;
+    }
+
+    public int getFireBreathLevel() {
+        return fireBreathLevel;
+    }
+
+    public void setFireBreathLevel(int fireBreathLevel) {
+        this.fireBreathLevel = fireBreathLevel;
+    }
+
 }

@@ -4,11 +4,7 @@ import fad.game.equipment.Equipment;
 import fad.game.equipment.EquipmentType;
 import fad.game.equipment.Weapon;
 import fad.game.equipment.WeaponAttackType;
-import fad.game.spell.Spell;
 import fad.util.Util;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Adds level to attack rolls, except when using ranged weapons (bows or slings)

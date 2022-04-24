@@ -34,6 +34,10 @@ public class Util {
         return roll(3);
     }
 
+    public static int roll4d6(){
+        return roll(4);
+    }
+
     public static int rolld66(){
         return (roll() * 10) + roll();
     }

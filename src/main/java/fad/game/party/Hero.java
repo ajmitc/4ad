@@ -1,6 +1,7 @@
 package fad.game.party;
 
 import fad.game.equipment.Equipment;
+import fad.game.equipment.EquipmentType;
 import fad.game.spell.Spell;
 
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ public abstract class Hero {
     protected String name;
     protected HeroType type;
     protected AttackType attackType;
+    protected AttackType spellCastType;
+    protected AttackType solvePuzzleType;
     protected DefenseType defenseType;
     protected List<Equipment> inventory = new ArrayList<>();
     protected Equipment hand1;
@@ -21,6 +24,7 @@ public abstract class Hero {
     protected int lifePoints;
     //protected List<Clue> clues = new ArrayList<>();
     //protected List<Ability> abilities = new ArrayList<>();
+    protected List<HeroTrait> traits = new ArrayList<>();
 
     protected List<Spell> readiedSpells = new ArrayList<>();
     protected int maxReadiedSpells = 0;
@@ -53,6 +57,22 @@ public abstract class Hero {
         this.attackType = attackType;
     }
 
+    public AttackType getSpellCastType() {
+        return spellCastType;
+    }
+
+    public void setSpellCastType(AttackType spellCastType) {
+        this.spellCastType = spellCastType;
+    }
+
+    public AttackType getSolvePuzzleType() {
+        return solvePuzzleType;
+    }
+
+    public void setSolvePuzzleType(AttackType solvePuzzleType) {
+        this.solvePuzzleType = solvePuzzleType;
+    }
+
     public List<Equipment> getInventory() {
         return inventory;
     }
@@ -71,6 +91,10 @@ public abstract class Hero {
 
     public void setHand2(Equipment hand2) {
         this.hand2 = hand2;
+    }
+
+    public boolean isInHand(EquipmentType type){
+        return (hand1 != null && hand1.getType() == type) || (hand2 != null && hand2.getType() == type);
     }
 
     public Equipment getBackSlingItem() {
@@ -147,5 +171,13 @@ public abstract class Hero {
 
     public void setMaxReadiedSpells(int maxReadiedSpells) {
         this.maxReadiedSpells = maxReadiedSpells;
+    }
+
+    public List<HeroTrait> getTraits() {
+        return traits;
+    }
+
+    public void addTrait(HeroTrait trait) {
+        this.traits.add(trait);
     }
 }

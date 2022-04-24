@@ -147,6 +147,111 @@ public class RoomFactory {
                         " # # ",
                         " #h# ",
                 };
+            case 21:
+                return new String[]{
+                        "#####",
+                        "#   #",
+                        "#   #",
+                        "#   #",
+                        "##d##",
+                };
+            case 22:
+                return new String[]{
+                        "##d##",
+                        "#   #",
+                        "d   #",
+                        "#   #",
+                        "##h##",
+                };
+            case 23:
+                return new String[]{
+                        "   #####",
+                        "####   #",
+                        "d      d",
+                        "####   #",
+                        "   #   #",
+                        "   #####",
+                };
+            case 24:
+                return new String[]{
+                        " #d# ",
+                        "## ##",
+                        "d   #",
+                        "#   #",
+                        "## ##",
+                        " #d# ",
+                };
+            case 25:
+                return new String[]{
+                        "   #####",
+                        "####   #",
+                        "h      d",
+                        "####   #",
+                        "   #####",
+                };
+            case 26:
+                return new String[]{
+                        "###",
+                        "d #",
+                        "# d",
+                        "###",
+                };
+            case 31:
+                return new String[]{
+                        " ##d#",
+                        " #  #",
+                        " #  #",
+                        "#   #",
+                        "# ###",
+                        "#d#  ",
+                };
+            case 32:
+                return new String[]{
+                        " ####",
+                        " #  d",
+                        " # ##",
+                        "## ##",
+                        "d   d",
+                        "#####",
+                };
+            case 33:
+                return new String[]{
+                        "#d#",
+                        "# #",
+                        "d #",
+                        "# #",
+                        "###",
+                };
+            case 34:
+                return new String[]{
+                        " #d#",
+                        "## ##",
+                        "#   #",
+                        "#   #",
+                        "## ##",
+                        " #d# ",
+                };
+            case 35:
+                return new String[]{
+                        "#h#",
+                        "# #####",
+                        "#     #",
+                        "##    #",
+                        " #    #",
+                        " ######",
+                };
+            case 36:
+                return new String[]{
+                        "#####",
+                        "##  d",
+                        "## ##",
+                        "#  ###",
+                        "d    #",
+                        "#    #",
+                        "## ###",
+                        "d  ###",
+                        "######",
+                };
         }
         return new String[]{};
     }

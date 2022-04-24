@@ -10,7 +10,7 @@ import fad.game.chart.SpecialEvent;
 import fad.game.chart.SpecialEventTable;
 import fad.game.chart.SpecialFeature;
 import fad.game.chart.SpecialFeatureTable;
-import fad.game.chart.Treasure;
+import fad.game.reward.Treasure;
 import fad.game.chart.TreasureTable;
 import fad.game.dungeon.Room;
 import fad.game.dungeon.RoomFactory;
@@ -21,8 +21,8 @@ import fad.game.party.Hero;
 import fad.game.party.HeroType;
 import fad.game.spell.Spell;
 import fad.game.spell.SpellType;
-import fad.monster.Boss;
-import fad.monster.Minion;
+import fad.game.monster.Boss;
+import fad.game.monster.Minion;
 import fad.util.Util;
 import fad.view.View;
 import java.awt.event.ActionEvent;
@@ -67,6 +67,8 @@ public class Controller {
                             model.getGame().getParty().createHero(HeroType.ELF);
                             model.getGame().getParty().createHero(HeroType.DWARF);
                             model.getGame().getParty().createHero(HeroType.WIZARD);
+
+                            // TODO Let Elf and Wizard ready spells
 
                             createDungeon();
                             model.getGame().setPhaseStep(PhaseStep.END_PHASE);
@@ -217,6 +219,14 @@ public class Controller {
             }
             case TWO_D6:{
                 int v = Util.roll2d6();
+                if (hero != null)
+                    hero.adjGold(v);
+                else
+                    splitGoldAmongParty(v);
+                break;
+            }
+            case D6_X_D6: {
+                int v = Util.roll() * Util.roll();
                 if (hero != null)
                     hero.adjGold(v);
                 else

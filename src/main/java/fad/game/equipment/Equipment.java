@@ -3,7 +3,6 @@ package fad.game.equipment;
 public class Equipment {
     private String name;
     private EquipmentType type;
-    private boolean ranged = false;
     // Number of slots used by this equipment
     // ie. 1-one handed weapon, 2- two handed weapon
     // Two-handed weapons give a +1 attack rolls
@@ -23,13 +22,8 @@ public class Equipment {
     public Equipment(){}
 
     public Equipment(String name, EquipmentType type){
-        this(name, type, false);
-    }
-
-    public Equipment(String name, EquipmentType type, boolean ranged){
         this.name = name;
         this.type = type;
-        this.ranged = ranged;
     }
 
     public String getName() {
@@ -46,14 +40,6 @@ public class Equipment {
 
     public void setType(EquipmentType type) {
         this.type = type;
-    }
-
-    public boolean isRanged() {
-        return ranged;
-    }
-
-    public void setRanged(boolean ranged) {
-        this.ranged = ranged;
     }
 
     public int getNumSlotUsage() {
@@ -78,5 +64,24 @@ public class Equipment {
 
     public void setNumUses(int numUses) {
         this.numUses = numUses;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(name);
+        sb.append("(");
+        sb.append(type);
+        sb.append(")");
+        if ((this instanceof Weapon) && ((Weapon) this).getAttackType() == WeaponAttackType.RANGED)
+            sb.append(" RANGED");
+        if (weight != EquipmentWeight.NORMAL){
+            sb.append(" ");
+            sb.append(weight);
+        }
+        if (numUses != 1){
+            sb.append(" x");
+            sb.append(numUses);
+        }
+        return sb.toString();
     }
 }

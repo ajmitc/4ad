@@ -2,5 +2,6 @@ package fad.game.equipment;
 
 public enum WeaponAttackType {
     CRUSHING,
-    SLASHING
+    SLASHING,
+    RANGED
 }

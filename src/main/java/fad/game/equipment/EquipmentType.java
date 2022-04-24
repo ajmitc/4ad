@@ -11,7 +11,8 @@ public enum EquipmentType {
     HOLY_WATER_VIAL("Holy Water Vial"),
     SCROLL("Scroll"),
     SPELL_BOOK("Spell Book"),
-    TREASURE("Treasure");
+    TREASURE("Treasure"),
+    WRITING_IMPLEMENTS("Writing Implements");
 
     private String name;
     EquipmentType(String n){

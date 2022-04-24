@@ -2,11 +2,12 @@ package fad.view;
 
 import fad.Model;
 import fad.game.party.Hero;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.stream.Collectors;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 /**
  *
@@ -46,11 +47,65 @@ public class HeroPanel extends JPanel{
         lblReadiedSpells = new JLabel();
         lblMaxReadiedSpells = new JLabel();
 
-        btnOpenInventory = new JButton();
-        btnCastSpell = new JButton();
+        btnOpenInventory = new JButton("Inventory");
+        btnCastSpell = new JButton("Cast Spell");
+
+        JLabel lblAttackTitle = new JLabel("Attack: ");
+        JLabel lblDefenseTitle = new JLabel("Defense: ");
+        JLabel lblGoldTitle = new JLabel("Gold: ");
+        JLabel lblLevelTitle = new JLabel("Level ");
+        JLabel lblLifePointsTitle = new JLabel("HP: ");
+        JLabel lblMaxLifePointsTitle = new JLabel("/");
+        JLabel lblReadiedSpellsTitle = new JLabel("Spells: ");
+        JLabel lblMaxReadiedSpellsTitle = new JLabel("Max Spells: ");
 
         // Layout panel
-        //new GridBagLayoutHelper(this)
+        new GridBagLayoutHelper(this)
+                .setGridWidth(6)
+                .add(lblName)
+                .nextRow()
+
+                .resetGridWidth()
+                .add(lblLevelTitle)
+                .add(lblLevel)
+                .setGridWidth(4)
+                .add(lblHeroType)
+                .nextRow()
+
+                .resetGridWidth()
+                .add(lblAttackTitle)
+                .setGridWidth(2)
+                .add(lblAttackType)
+                .setGridWidth(1)
+                .add(lblDefenseTitle)
+                .setGridWidth(2)
+                .add(lblDefenseType)
+                .nextRow()
+
+                .resetGridWidth()
+                .add(lblGoldTitle)
+                .add(lblGold)
+                .add(lblLifePointsTitle)
+                .add(lblLifePoints)
+                .add(lblMaxLifePointsTitle)
+                .add(lblMaxLifePoints)
+                .nextRow()
+
+                .resetGridWidth()
+                .add(lblReadiedSpellsTitle)
+                .setGridWidth(2)
+                .add(lblReadiedSpells)
+                .setGridWidth(1)
+                .add(lblMaxReadiedSpellsTitle)
+                .setGridWidth(2)
+                .add(lblMaxReadiedSpells)
+                .nextRow()
+
+                .resetGridWidth()
+                .setGridWidth(3)
+                .add(btnOpenInventory)
+                .add(btnCastSpell)
+                ;
     }
 
     public void refresh(){
@@ -74,6 +129,13 @@ public class HeroPanel extends JPanel{
 
     public void setHero(Hero hero) {
         this.hero = hero;
+        this.btnOpenInventory.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                InventoryDialog d = new InventoryDialog(model, view, hero);
+                d.setVisible(true);
+            }
+        });
         refresh();
     }
 }

@@ -1,5 +1,6 @@
 package fad.game.chart;
 
+import fad.game.reward.Treasure;
 import fad.util.Util;
 
 /**

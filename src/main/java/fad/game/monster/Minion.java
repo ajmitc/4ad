@@ -1,4 +1,4 @@
-package fad.monster;
+package fad.game.monster;
 
 /**
  *

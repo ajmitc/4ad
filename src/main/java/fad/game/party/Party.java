@@ -31,15 +31,20 @@ public class Party {
         switch(type){
             case WARRIOR: {
                 hero = new Warrior();
-                hero.setAttackType(AttackType.D6_PLUS_LEVEL);
-                hero.setHand1(new Weapon("Sword", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING));
-                hero.setHand2(new Weapon("Shield", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.CRUSHING));
-                hero.setArmor(new Equipment("Light Armor", EquipmentType.LIGHT_ARMOR));
-                hero.setGold(Util.roll2d6());
-                hero.setLifePoints(6 + hero.getLevel());
                 break;
             }
-            // TODO Set other Hero Type attributes here
+            case ELF: {
+                hero = new Elf();
+                break;
+            }
+            case DWARF: {
+                hero = new Dwarf();
+                break;
+            }
+            case WIZARD: {
+                hero = new Wizard();
+                break;
+            }
         }
 
         heroes.add(hero);

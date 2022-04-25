@@ -1,6 +1,7 @@
 package fad.game.monster;
 
 import fad.game.reward.Treasure;
+import fad.util.Util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -54,6 +55,21 @@ public abstract class Monster {
         this.type = type;
     }
 
+    public Monster(final Monster other){
+        this.type = other.type;
+        this.level = other.level;
+        this.hitpoints = other.hitpoints;
+        this.numAttacks = other.numAttacks;
+        this.numDamagePerAttack = other.numDamagePerAttack;
+        this.traits.addAll(other.traits);
+        this.treasure.addAll(other.treasure);
+        this.reactionChoices.addAll(other.reactionChoices);
+        this.reaction = other.reaction;
+        this.poisonLevel = other.poisonLevel;
+        this.fireBreathLevel = other.fireBreathLevel;
+        this.bribeAmountPerMonster = other.bribeAmountPerMonster;
+    }
+
     public MonsterType getType() {
         return type;
     }
@@ -86,6 +102,10 @@ public abstract class Monster {
         traits.add(trait);
     }
 
+    public boolean hasTrait(MonsterTrait trait){
+        return traits.contains(trait);
+    }
+
     public List<Treasure> getTreasure() {
         return treasure;
     }
@@ -100,6 +120,10 @@ public abstract class Monster {
 
     public void setReactionChoices(Reaction ... reactions){
         reactionChoices.addAll(Arrays.asList(reactions));
+    }
+
+    public Reaction rollForReaction(){
+        return reactionChoices.get(Util.roll() - 1);
     }
 
     public Reaction getReaction() {

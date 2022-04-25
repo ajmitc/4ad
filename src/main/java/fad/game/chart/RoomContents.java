@@ -15,7 +15,16 @@ public enum RoomContents {
     EMPTY("Empty"),
     WIERD_MONSTER_IF_ROOM("Wierd Monster"),
     BOSS("Boss"),
-    SMALL_DRAGONS_LAIR("Small Dragon's Lair");
+    SMALL_DRAGONS_LAIR("Small Dragon's Lair"),
+    
+    WANDERING_MONSTER("Wandering Monster"),
+    // Roll 1d6.  On a 6, it is a safe shortcut out of the dungeon.
+    // Heroes may choose to "spy" in room before entering it.
+    // Any GP are doubled.
+    // Any monsters will be surprised by heroes (reduce their level by 1 - to a minimum of 1 - in first turn of combat)
+    SECRET_DOOR("Secret Door"),
+    // Hidden Treasure - Roll on Hidden Treasure Complication Table.  3d6 x 3d6 GP
+    CHOOSE_CLUE_DOOR_TREASURE("Choose a clue, a secret door, or a hidden treasure");
 
     private String name;
     RoomContents(String n){

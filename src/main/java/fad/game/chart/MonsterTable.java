@@ -4,6 +4,7 @@ import fad.game.reward.Treasure;
 import fad.game.monster.Boss;
 import fad.game.monster.MonsterTrait;
 import fad.game.monster.Minion;
+import fad.game.monster.Monster;
 import fad.game.monster.MonsterType;
 import fad.game.monster.Reaction;
 import fad.util.Util;
@@ -320,5 +321,37 @@ public class MonsterTable {
         monster.setReactionChoices(Reaction.SLEEPING, Reaction.ASK_BRIBE, Reaction.ASK_BRIBE, Reaction.FIGHT, Reaction.FIGHT, Reaction.QUEST);
         monster.setBribeAmountPerMonster(-3);
         return monster;
+    }
+
+
+    /**
+     * Determine the Wandering monster.  Boss Wandering Monsters cannot be final bosses.
+     * 
+     * Wandering Monsters attack first on first round of combat.
+     * Heroes may not use their shield bonus on their first Defense roll
+     * If in a corridor, wandering monsters will attack the rearmost two heroes in the marching order
+     * If in a room and there are enough monsters, at least one monster will attack each hero.  
+     * Extra monsters will attack most hated heroes first, then lowest HP heroes.  Randomly select heroes if ties.
+     * All wandering monsters roll morale when the situation calls for it, unless they are monster type that never rolls for morale.
+     * @return 
+     */
+    public static Monster getWanderingMonster(){
+        switch(Util.roll()){
+            case 1: 
+            case 2:
+                return getVermin();
+            case 3:
+            case 4:
+                return getMinion();
+            case 5:
+                return getWeirdMonster();
+            case 6:{
+                Boss monster = getBoss();
+                while (monster.getType() == MonsterType.SMALL_DRAGON)
+                    monster = getBoss();
+                return monster;
+            }
+        }
+        return null;
     }
 }

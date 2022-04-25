@@ -1,6 +1,7 @@
 package fad.game.chart;
 
 import fad.game.reward.Treasure;
+import fad.game.reward.TreasureComplication;
 import fad.util.Util;
 
 /**
@@ -38,6 +39,21 @@ public class TreasureTable {
             case 4: return Treasure.MAGIC_WEAPON;
             case 5: return Treasure.POTION_OF_HEALING;
             case 6: return Treasure.FIREBALL_STAFF;
+        }
+        return null;
+    }
+
+    public static TreasureComplication getHiddenTreasureComplication(){
+        switch(Util.roll()){
+            case 1:
+            case 2:
+                return TreasureComplication.WANDERING_MONSTER;
+            case 3:
+            case 4:
+            case 5:
+                return TreasureComplication.TRAP;
+            case 6:
+                return TreasureComplication.GHOST;
         }
         return null;
     }

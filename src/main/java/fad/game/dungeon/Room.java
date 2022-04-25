@@ -1,14 +1,19 @@
 package fad.game.dungeon;
 
 import fad.game.chart.RoomContents;
+import fad.game.monster.Monster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Room {
+    private boolean visited = false;
+    private boolean searched = false;
     private boolean corridor;
     private List<List<RoomSpace>> spaces = new ArrayList<>();
     private RoomContents roomContents;
+
+    private Monster monster;
 
     public void assignLocationCoordinates(int startingX, int startingY){
         for (int r = 0; r < spaces.size(); ++r){
@@ -26,6 +31,22 @@ public class Room {
                 spaces.get(r).get(c).setLocation(x + dx, y + dy);
             }
         }
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+
+    public boolean isSearched() {
+        return searched;
+    }
+
+    public void setSearched(boolean searched) {
+        this.searched = searched;
     }
 
     public boolean isCorridor() {
@@ -50,5 +71,13 @@ public class Room {
 
     public List<RoomSpace> getAllSpaces() {
         return spaces.stream().flatMap(List<RoomSpace>::stream).collect(Collectors.toList());
+    }
+
+    public Monster getMonster() {
+        return monster;
+    }
+
+    public void setMonster(Monster monster) {
+        this.monster = monster;
     }
 }

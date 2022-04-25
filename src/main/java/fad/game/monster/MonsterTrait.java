@@ -62,6 +62,8 @@ public enum MonsterTrait {
     UNWAVERING("Unwavering"),
     // Any hero killed by this monster becomes a Mummy and must be fought by the party
     VICTIM_BECOMES_MUMMY("Victims become mummies"),
+    // Set this trait on all wandering monsters
+    WANDERING("Wandering Monster"),
     // Crushing attacks get +1 on attack rolls
     WEAK_AGAINST_CRUSHING("Crushing weapons get +1 attack"),
     // Elves get +1 attack and spell casts

@@ -45,5 +45,21 @@ public class RoomContentsTable {
             }
         }
         return null;
-    }    
+    }
+
+    /**
+     * Roll on this table when searching a seemingly empty room
+     * @param isCorridor
+     * @return 
+     */
+    public static RoomContents searchEmptyRoom(boolean isCorridor){
+        int v = Util.roll();
+        if (isCorridor)
+            v -= 1;
+        if (v <= 1)
+            return RoomContents.WANDERING_MONSTER;
+        if (v <= 4)
+            return RoomContents.EMPTY;
+        return RoomContents.CHOOSE_CLUE_DOOR_TREASURE;
+    }
 }

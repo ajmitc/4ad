@@ -8,7 +8,7 @@ package fad.game.quest;
 public enum QuestType {
     // Kill a boss monster
     // Roll on MonsterTable to determine who.
-    // The next time the party meets a boss in a room, instead of rolling it up, yo umay use the boss from the quest.
+    // The next time the party meets a boss in a room, instead of rolling it up, you may use the boss from the quest.
     // Killing the boss and bringing it's head to the creature's room completes the quest.
     BRING_ME_HIS_HEAD("Bring me his head!"),
     // Bring d6 x 50 worth of treasure to this room.

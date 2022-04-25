@@ -22,6 +22,8 @@ import fad.util.Util;
 public class Elf extends Hero{
     public Elf(){
         setAttackType(AttackType.D6_PLUS_LEVEL);
+        setSpellCastType(AttackType.D6_PLUS_LEVEL);
+        setDefenseType(DefenseType.D6);
         setBackSlingItem(new Weapon("Sword", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING));
         setHand1(new Weapon("Bow", EquipmentType.TWO_HAND_WEAPON, WeaponAttackType.RANGED));
         setArmor(new Equipment("Light Armor", EquipmentType.LIGHT_ARMOR));

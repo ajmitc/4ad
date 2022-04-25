@@ -68,6 +68,7 @@ public class Controller {
                             model.getGame().getParty().createHero(HeroType.DWARF);
                             model.getGame().getParty().createHero(HeroType.WIZARD);
 
+                            // TODO Let Dwarf choose starting equipment
                             // TODO Let Elf and Wizard ready spells
 
                             createDungeon();

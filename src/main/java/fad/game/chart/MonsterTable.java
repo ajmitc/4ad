@@ -162,7 +162,7 @@ public class MonsterTable {
         switch(v){
             case 1:{
                 monster = new Boss(MonsterType.MINOTAUR, 5);
-                monster.setHitpoints(4);
+                monster.setOriginalHitpoints(4);
                 monster.setNumAttacks(2);
                 monster.addTrait(MonsterTrait.BULL_RUSH);
                 monster.addTrait(MonsterTrait.UNLUCKY_HALFLINGS);
@@ -173,7 +173,7 @@ public class MonsterTable {
             }
             case 2:{
                 monster = new Boss(MonsterType.IRON_EATER, 3);
-                monster.setHitpoints(4);
+                monster.setOriginalHitpoints(4);
                 monster.setNumAttacks(3);
                 monster.addTrait(MonsterTrait.CANCEL_HEAVY_ARMOR_BONUS);
                 monster.addTrait(MonsterTrait.IRON_EATER_ATTACK);
@@ -184,7 +184,7 @@ public class MonsterTable {
             }
             case 3:{
                 monster = new Boss(MonsterType.CHIMERA, 5);
-                monster.setHitpoints(6);
+                monster.setOriginalHitpoints(6);
                 monster.setNumAttacks(3);
                 monster.addTreasure(TreasureTable.get());
                 monster.addTrait(MonsterTrait.FIRE_BREATHER);
@@ -195,7 +195,7 @@ public class MonsterTable {
             }
             case 4:{
                 monster = new Boss(MonsterType.CATOBLEPAS, 4);
-                monster.setHitpoints(4);
+                monster.setOriginalHitpoints(4);
                 monster.addTreasure(TreasureTable.getModified(1));
                 monster.addTrait(MonsterTrait.GAZE_ATTACK);
                 monster.setReactionChoices(Reaction.FLEE, Reaction.FIGHT, Reaction.FIGHT, Reaction.FIGHT, Reaction.FIGHT, Reaction.FIGHT);
@@ -203,7 +203,7 @@ public class MonsterTable {
             }
             case 5:{
                 monster = new Boss(MonsterType.GIANT_SPIDER, 5);
-                monster.setHitpoints(3);
+                monster.setOriginalHitpoints(3);
                 monster.setNumAttacks(2);
                 monster.addTreasure(TreasureTable.get());
                 monster.addTreasure(TreasureTable.get());
@@ -233,7 +233,7 @@ public class MonsterTable {
         switch(v){
             case 1:{
                 monster = new Boss(MonsterType.MUMMY, 5);
-                monster.setHitpoints(4);
+                monster.setOriginalHitpoints(4);
                 monster.setNumAttacks(2);
                 monster.addTrait(MonsterTrait.UNDEAD);
                 monster.addTrait(MonsterTrait.VICTIM_BECOMES_MUMMY);
@@ -245,7 +245,7 @@ public class MonsterTable {
             }
             case 2:{
                 monster = new Boss(MonsterType.ORC_BRUTE, 5);
-                monster.setHitpoints(5);
+                monster.setOriginalHitpoints(5);
                 monster.setNumAttacks(2);
                 Treasure treasure = TreasureTable.getModified(1);
                 if (treasure.isMagic()){
@@ -258,7 +258,7 @@ public class MonsterTable {
             }
             case 3:{
                 monster = new Boss(MonsterType.OGRE, 5);
-                monster.setHitpoints(6);
+                monster.setOriginalHitpoints(6);
                 monster.setNumDamagePerAttack(2);
                 monster.addTreasure(TreasureTable.get());
                 monster.setReactionChoices(Reaction.ASK_BRIBE, Reaction.FIGHT, Reaction.FIGHT, Reaction.FIGHT_TO_DEATH, Reaction.FIGHT_TO_DEATH, Reaction.FIGHT_TO_DEATH);
@@ -267,7 +267,7 @@ public class MonsterTable {
             }
             case 4:{
                 monster = new Boss(MonsterType.MEDUSA, 4);
-                monster.setHitpoints(4);
+                monster.setOriginalHitpoints(4);
                 monster.addTreasure(TreasureTable.getModified(1));
                 monster.addTrait(MonsterTrait.GAZE_ATTACK);
                 monster.setReactionChoices(Reaction.ASK_BRIBE, Reaction.QUEST, Reaction.FIGHT, Reaction.FIGHT, Reaction.FIGHT, Reaction.FIGHT_TO_DEATH);
@@ -276,7 +276,7 @@ public class MonsterTable {
             }
             case 5:{
                 monster = new Boss(MonsterType.CHAOS_LORD, 6);
-                monster.setHitpoints(4);
+                monster.setOriginalHitpoints(4);
                 monster.setNumAttacks(3);
                 monster.addTreasure(TreasureTable.getModified(1));
                 monster.addTreasure(TreasureTable.getModified(1));
@@ -313,7 +313,7 @@ public class MonsterTable {
      */
     public static Boss getSmallDragon(){
         Boss monster = new Boss(MonsterType.SMALL_DRAGON, 6);
-        monster.setHitpoints(5);
+        monster.setOriginalHitpoints(5);
         monster.setNumAttacks(2);
         monster.addTreasure(TreasureTable.getModified(1));
         monster.addTreasure(TreasureTable.getModified(1));

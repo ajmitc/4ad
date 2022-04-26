@@ -20,6 +20,7 @@ public abstract class Monster {
     protected int level = 1;
 
     // Number of times this monster can be hit before dying
+    protected int originalHitpoints = 1;
     protected int hitpoints = 1;
 
     // Number of attacks this monster can make
@@ -58,6 +59,7 @@ public abstract class Monster {
     public Monster(final Monster other){
         this.type = other.type;
         this.level = other.level;
+        this.originalHitpoints = other.originalHitpoints;
         this.hitpoints = other.hitpoints;
         this.numAttacks = other.numAttacks;
         this.numDamagePerAttack = other.numDamagePerAttack;
@@ -86,12 +88,25 @@ public abstract class Monster {
         this.level = level;
     }
 
+    public int getOriginalHitpoints() {
+        return originalHitpoints;
+    }
+
+    public void setOriginalHitpoints(int originalHitpoints) {
+        this.originalHitpoints = originalHitpoints;
+        this.hitpoints = originalHitpoints;
+    }
+
     public int getHitpoints() {
         return hitpoints;
     }
 
     public void setHitpoints(int hitpoints) {
         this.hitpoints = hitpoints;
+    }
+
+    public void adjHitpoints(int amount) {
+        this.hitpoints += amount;
     }
 
     public Set<MonsterTrait> getTraits() {

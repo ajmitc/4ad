@@ -7,7 +7,9 @@ package fad.game.monster;
 public enum Reaction {
     ASK_BRIBE("Ask for bribe"),
     FIGHT("Fight"),
+    // Do not make a morale test
     FIGHT_TO_DEATH("Fight to the death"),
+    // Monster disappears from dungeon.  It drops it's treasure.
     FLEE("Flee"),
     FLEE_IF_OUTNUMBERED("Flee"),
     // If party has wizard or magic item allowing to cast spell, duel against monster

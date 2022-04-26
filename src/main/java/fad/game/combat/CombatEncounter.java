@@ -1,4 +1,4 @@
-package fad.game;
+package fad.game.combat;
 
 import fad.game.dungeon.Room;
 import fad.game.monster.Monster;
@@ -18,10 +18,6 @@ public class CombatEncounter {
 
     // Monster(s) the heroes are fighting
     private Monster monster;
-
-    // If true, it's the hero's turn to attack
-    // If false, it's the monster's turn to attack
-    private boolean heroesTurn = true;
 
     // Number of turns taken during this combat
     // A turn is either a hero or monster turn
@@ -60,20 +56,16 @@ public class CombatEncounter {
         this.monster = monster;
     }
 
-    public boolean isHeroesTurn() {
-        return heroesTurn;
-    }
-
-    public void setHeroesTurn(boolean heroesTurn) {
-        this.heroesTurn = heroesTurn;
-    }
-
     public int getTurns() {
         return turns;
     }
 
     public void setTurns(int turns) {
         this.turns = turns;
+    }
+
+    public void adjTurns(int amount) {
+        this.turns += amount;
     }
 
     public boolean isResolved() {

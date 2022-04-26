@@ -3,6 +3,7 @@ package fad.game.party;
 import fad.game.dungeon.Room;
 import fad.game.equipment.Equipment;
 import fad.game.equipment.EquipmentType;
+import fad.game.equipment.Weapon;
 import fad.game.spell.Spell;
 
 import java.util.ArrayList;
@@ -85,6 +86,20 @@ public abstract class Hero {
 
     public Hero(){
 
+    }
+
+    /**
+     * Get the Weapon that this hero is attacking with
+     * @return 
+     */
+    public Weapon getAttackingWeapon(){
+        if (hand1 != null && hand1 instanceof Weapon){
+            return (Weapon) hand1;
+        }
+        if (hand2 != null && hand2 instanceof Weapon){
+            return (Weapon) hand2;
+        }
+        return Weapon.FISTS;
     }
 
     public String getName() {

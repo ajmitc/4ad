@@ -1,6 +1,6 @@
 package fad;
 
-import fad.game.CombatEncounter;
+import fad.game.combat.CombatEncounter;
 import fad.game.Game;
 import fad.game.Phase;
 import fad.game.PhaseStep;
@@ -13,12 +13,18 @@ import fad.game.chart.SpecialFeature;
 import fad.game.chart.SpecialFeatureTable;
 import fad.game.reward.Treasure;
 import fad.game.chart.TreasureTable;
+import fad.game.combat.HeroCombatAction;
+import fad.game.combat.HeroCombatAssignments;
 import fad.game.dungeon.Room;
 import fad.game.dungeon.RoomFactory;
 import fad.game.dungeon.RoomSpace;
+import fad.game.equipment.Equipment;
+import fad.game.equipment.EquipmentWeight;
 import fad.game.equipment.Scroll;
 import fad.game.equipment.SpellBook;
 import fad.game.equipment.TreasureEquipment;
+import fad.game.equipment.Weapon;
+import fad.game.equipment.WeaponAttackType;
 import fad.game.party.Hero;
 import fad.game.party.HeroType;
 import fad.game.spell.Spell;
@@ -40,6 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Controller {
     private Model model;
@@ -53,6 +60,7 @@ public class Controller {
     // List of rooms where combat will occur
     private List<Room> encounterRooms = new ArrayList<>();
     private CombatEncounter combatEncounter;
+    private HeroCombatAssignments combatAssignments;
 
     public Controller(Model model, View view){
         this.model = model;
@@ -167,17 +175,29 @@ public class Controller {
                                 model.getGame().setPhaseStep(PhaseStep.PLAY_END_COMBAT);
                                 break;
                             }
+                            ViewUtil.popupNotify("Combat", "Combat starting against " + combatEncounter.getMonster().getType());
                             model.getGame().setPhaseStep(PhaseStep.PLAY_COMBAT_ROUND);
                             break;
                         }
-                        case PLAY_COMBAT_ROUND:{
+                        case PLAY_PREP_COMBAT_ROUND:{
+                            // If heroes will attack this turn, get their actions
                             if (combatEncounter == null || combatEncounter.isResolved())
                                 model.getGame().setPhaseStep(PhaseStep.PLAY_END_COMBAT);
-                            else
-                                doCombatRound(combatEncounter);
+                            else{
+                                // TODO Open dialog to allow player to select hero actions
+                                model.getGame().setPhaseStep(PhaseStep.PLAY_COMBAT_ROUND);
+                                break;
+                            }
+                            break;
+                        }
+                        case PLAY_COMBAT_ROUND:{
+                            doCombatRound(combatEncounter);
+                            // TODO Show combat results
+                            model.getGame().setPhaseStep(PhaseStep.PLAY_PREP_COMBAT_ROUND);
                             break;
                         }
                         case PLAY_END_COMBAT:{
+                            ViewUtil.popupNotify("Combat", "Combat ended");
                             combatEncounter = null;
                             model.getGame().setPhaseStep(PhaseStep.PLAY_START_ENCOUNTER);
                             break;
@@ -347,6 +367,12 @@ public class Controller {
         }
     }
 
+    private void resolveTreasure(List<Treasure> treasure, Hero hero){
+        for (Treasure t: treasure){
+            resolveTreasure(t, hero);
+        }
+    }
+
     private void resolveTreasure(Treasure treasure, Hero hero){
         switch(treasure){
             case D6:{
@@ -469,7 +495,6 @@ public class Controller {
             // Monster attacks
             monster.setReaction(Reaction.FIGHT);
             combatEncounter = new CombatEncounter(room, heroes, monster);
-            combatEncounter.setHeroesTurn(false);
             model.getGame().setPhaseStep(PhaseStep.PLAY_START_COMBAT);
         }
         else {
@@ -579,89 +604,162 @@ public class Controller {
     }
 
 
+    /**
+     * A combat round is defined as:
+     * 1) Hero Attack Turn
+     * 2) Monster Attack Turn
+     * 
+     * If the monster is wandering, the Heroes miss their first Attack Turn
+     * @param encounter 
+     */
     private void doCombatRound(CombatEncounter encounter){
         Monster monster = encounter.getMonster();
 
-        List<Monster> expandedMonsters = new ArrayList<>();
-        if (!monster.getType().isBoss()){
-            // Could be multiple vermin/minions
-            expandedMonsters.addAll(((Minion) monster).expand());
-        }
-        else {
-            expandedMonsters.add(monster);
+        ViewUtil.popupNotify("Combat", "Combat versus " + monster.getType() + ".  Round " + (encounter.getTurns() / 2 + 1));
+
+        if (monster.hasTrait(MonsterTrait.WANDERING) && encounter.getTurns() == 0){
+            doCombatMonsterTurn(encounter);
         }
 
-        Map<Hero, List<Monster>> pairings = new HashMap<>();
-        for (Hero hero: encounter.getHeroes()){
-            pairings.put(hero, new ArrayList<>());
-        }
-
-        for (Monster m: expandedMonsters){
-            // Choose Hero to attack
-            // If in a room and there are enough monsters, at least one monster will attack each hero.  
-            Hero target = null;
-
-            // First choose a Hero that is not being attacked
-            for (Hero hero: encounter.getHeroes()){
-                if (pairings.get(hero).isEmpty()){
-                    target = hero;
-                    break;
-                }
-            }
-
-            if (target == null){
-                // Extra monsters will attack most hated heroes first, then lowest HP heroes.  Randomly select heroes if ties.
-                // TODO Look for hated heroes
-
-                if (target == null){
-                    // Look for lowest HP heroes
-                    int lowestHP = 999;
-                    List<Hero> lowestHPHeroes = new ArrayList<>();
-                    for (Hero hero: encounter.getHeroes()){
-                        if (hero.getLifePoints() < lowestHP){
-                            lowestHPHeroes.clear();
-                            lowestHPHeroes.add(hero);
-                        }
-                        else if (hero.getLifePoints() == lowestHP){
-                            lowestHPHeroes.add(hero);
-                        }
-                    }
-                    target = lowestHPHeroes.get(Util.nextInt(lowestHPHeroes.size()));
-                }
-            }
-
-            pairings.get(target).add(m);
-        }
-
-        if (encounter.isHeroesTurn()){
-
-        }
-        else {
-
-        }
-
-        if (encounter.isHeroesTurn()){
-
-        }
-        else {
-
-        }
-        if (monster.hasTrait(MonsterTrait.WANDERING)){
-            // Wandering Monsters attack first on first round of combat.
-            // Heroes may not use their shield bonus on their first Defense roll
-            // If in a corridor, wandering monsters will attack the rearmost two heroes in the marching order
-            // If in a room and there are enough monsters, at least one monster will attack each hero.  
-            // Extra monsters will attack most hated heroes first, then lowest HP heroes.  Randomly select heroes if ties.
-            // All wandering monsters roll morale when the situation calls for it, unless they are monster type that never rolls for morale.
-        }
-
+        doCombatHerosTurn(encounter);
+        doCombatMonsterTurn(encounter);
     }
 
     private void doCombatHerosTurn(CombatEncounter encounter){
+        encounter.adjTurns(1);
+
         Monster monster = encounter.getMonster();
+        int monsterCount = monster.getType().isBoss()? 1: ((Minion) monster).getCount();
+        List<Hero> heroes = model.getGame().getParty().getHeroesInRoom(encounter.getRoom());
+
+        for (Hero hero: heroes){
+            HeroCombatAction action = combatAssignments.getActions().get(hero);
+
+            switch(action){
+                case ATTACK:{
+                    doHeroAttackMonster(hero, monster, heroes.size() > monsterCount);
+                    break;
+                }
+                case SWITCH_WEAPON:{
+                    break;
+                }
+                case CAST_SPELL:{
+                    break;
+                }
+            }
+        }
+    }
+
+    private void doHeroAttackMonster(Hero attacker, Monster defender, boolean monsterOutnumbered){
+        // Wizards add +L when casting spells
+
+        // Each hero rolls 1d6
+        int wounds = Util.roll();
+        // Warriors, elves, dwarves, and barbarians add +L
+        int modifier = 0;
+        if (attacker.getType() == HeroType.WARRIOR || 
+                attacker.getType() == HeroType.ELF || 
+                attacker.getType() == HeroType.DWARF || 
+                attacker.getType() == HeroType.BARBARIAN){
+            modifier = attacker.getLevel();
+        }
+        // Clerics add +1/2L (rounded down), but +L against undead
+        else if (attacker.getType() == HeroType.CLERIC){
+            if (defender.hasTrait(MonsterTrait.UNDEAD))
+                modifier += attacker.getLevel();
+            else
+                modifier += (attacker.getLevel() / 2);
+        }
+        // Rogues add +L when attacking outnumbered minions
+        else if (attacker.getType() == HeroType.ROGUE){
+            if (monsterOutnumbered)
+                modifier += attacker.getLevel();
+        }
+
+        // Two handed weapons adds +1
+        Weapon weapon = attacker.getAttackingWeapon();
+        if (weapon.getNumSlotUsage() > 1){
+            modifier += 1;
+        }
+
+        // Light weapons add -1
+        if (weapon.getWeight() == EquipmentWeight.LIGHT){
+            modifier -= 1;
+        }
+
+        // Crushing weapons add +1 to skeletons
+        if (weapon.getAttackType() == WeaponAttackType.CRUSHING && 
+                (defender.getType() == MonsterType.SKELETONS || defender.getType() == MonsterType.SKELETAL_RATS)){
+            modifier += 1;
+        }
+
+        if (modifier < 0)
+            modifier = 0;
+
+        int totalDamage = wounds + modifier;
+
+        if (!defender.getType().isBoss()){
+            Minion minion = (Minion) defender;
+
+            // Fighting minions:
+            // When an attack goes multiple times over the monster's level, the attack kills more than one minion
+            int monstersKilled = totalDamage / defender.getLevel();
+            if (monstersKilled > minion.getCount())
+                monstersKilled = minion.getCount();
+            minion.adjCount(-monstersKilled);
+
+            ViewUtil.popupNotify("Combat", attacker.getType() + " kills " + monstersKilled + " " + defender.getType());
+
+            if (minion.getCount() > 0 && minion.getReaction() != Reaction.FIGHT_TO_DEATH && !minion.hasTrait(MonsterTrait.UNWAVERING)){
+                // When a group of minions loses more than half it's initial number, the remaining minons must make a morale roll
+                //   Roll d6 for group.  On 3 or less, remaining monsters flee.  On 4+, monsters continue to fight
+                //   TODO Cowardly or courageous monsters have a +1 or -1 modifier to morale roll
+                //   Monsters who "fight to the death" do not test morale
+                int halfOriginalCount = (int) Math.floor(minion.getOriginalCount() / 2.0f);
+                if (minion.getCount() < halfOriginalCount){
+                    int morale = Util.roll();
+                    if (morale <= 3){
+                        // Monsters flee
+                        minion.setReaction(Reaction.FLEE);
+                        minion.setCount(0);
+                        ViewUtil.popupNotify("Combat", defender.getType() + " flees!");
+                    }
+                }
+            }
+        }
+        else {
+            // Fighting bosses:
+            // When an attack goes multiple times over the monster's level, it is wounded multiple times
+            int beforeHitpoints = defender.getHitpoints();
+            int totalWounds = totalDamage / defender.getLevel();
+            defender.adjHitpoints(totalWounds);
+            ViewUtil.popupNotify("Combat", attacker.getType() + " inflicts " + totalWounds + " on " + defender.getType());
+            // When a boss loses more than half of his life points, its level drops by one and it makes a morale test
+            int halfHitpoints = (int) Math.floor(defender.getOriginalHitpoints() / 2.0);
+            if (defender.getHitpoints() > 0 && beforeHitpoints >= halfHitpoints && defender.getHitpoints() < halfHitpoints){
+                defender.setLevel(defender.getLevel() - 1);
+                if (defender.getReaction() != Reaction.FIGHT_TO_DEATH && !defender.hasTrait(MonsterTrait.UNWAVERING)){
+                    // Roll 1d6.  On 3 or less, boss flees.  On 4+, boss fights on to bitter end.
+                    int morale = Util.roll();
+                    if (morale <= 3){
+                        // Monster flee
+                        ViewUtil.popupNotify("Combat", defender.getType() + " flees!");
+                        defender.setReaction(Reaction.FLEE);
+                    }
+                }
+            }
+        }
+
+
+        // When a monster flees, it drops it's treasure.
+        if (defender.getReaction() == Reaction.FLEE && !defender.getTreasure().isEmpty()){
+            ViewUtil.popupNotify("Combat", defender.getType() + " dropped " + defender.getTreasure().stream().map(t -> t.getName()).collect(Collectors.joining(", ")));
+            resolveTreasure(defender.getTreasure(), null);
+        }
     }
 
     private void doCombatMonsterTurn(CombatEncounter encounter){
+        encounter.adjTurns(1);
         Monster monster = encounter.getMonster();
 
         List<Monster> expandedMonsters = new ArrayList<>();
@@ -677,6 +775,20 @@ public class Controller {
         Set<Hero> attackedHeroes = new HashSet<>();
 
         // Set targets
+        // Depends on 
+        // 1: Number of monsters
+        // 2: Marching order
+        // 3: Room or corridor
+        // Room:
+        //    if monsters < heroes: marching order ignored, each monster attacks different hero (player decides who is not attacked)
+        //    if monsters = heroes: each monster attacks one hero
+        //    if monsters > heroes: each hero receives equal number of attacks.  Extra attacks go to hated hero types
+        //                          trolls, goblins, and kobolds hate dwarves; orcs hate elves; undead hate clerics
+        // Corridor:
+        //    Maximum of two monsters will attack the two characters in the front (1 and 2 of marching order).
+        //    A single hero in corridor will be attacked by both monsters
+        //    Wandering Monsters attack rearmost two heroes (no shield bonus)
+        // Dragon breath will hit all heroes in corridor or room
         for (Monster m: expandedMonsters){
             // Choose Hero to attack
             // If in a room and there are enough monsters, at least one monster will attack each hero.  
@@ -692,7 +804,8 @@ public class Controller {
 
             if (target == null){
                 // Extra monsters will attack most hated heroes first, then lowest HP heroes.  Randomly select heroes if ties.
-                // TODO Look for hated heroes
+                // TODO Look for hated heroes:
+                //   Trolls, goblins, and kobolds hate dwarves; orcs hate elves; undead hate clerics
 
                 if (target == null){
                     // Look for lowest HP heroes
@@ -729,7 +842,20 @@ public class Controller {
             // Roll 1d6
             int v = Util.roll();
 
+            if (v == 1){
+                // Always failure
+            }
+            if (v == 6){
+                // Always successful defense
+            }
+
             // TODO Modify as necessary
+            // Light armor: +1
+            // Heavy Armor: +2
+            // Shield: +1 (negated by Wandering monsters)
+            // Rogue: +L
+            // Dwarf defending against a troll or giant: +1
+            // Halfling defending against troll, giant, or ogre: +L
 
             // If value > monster level, hit is blocked
             // Otherwise, hero suffers damage

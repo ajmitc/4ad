@@ -8,10 +8,12 @@ import java.util.List;
  * @author aaron.mitchell
  */
 public class Minion extends Monster{
+    private int originalCount = 1;
     private int count = 1;
 
     public Minion(MonsterType type, int level, int count){
         super(type, level);
+        this.originalCount = count;
         this.count = count;
     }
 
@@ -31,11 +33,21 @@ public class Minion extends Monster{
         return minions;
     }
 
+    public int getOriginalCount() {
+        return originalCount;
+    }
+
     public int getCount() {
         return count;
     }
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public void adjCount(int amount) {
+        this.count += amount;
+        if (this.count < 0)
+            this.count = 0;
     }
 }

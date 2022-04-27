@@ -61,6 +61,10 @@ public enum MonsterType {
         return boss;
     }
 
+    public boolean isMinion() {
+        return !boss;
+    }
+
     @Override
     public String toString() {
         return name;

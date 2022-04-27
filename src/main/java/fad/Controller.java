@@ -19,6 +19,7 @@ import fad.game.dungeon.Room;
 import fad.game.dungeon.RoomFactory;
 import fad.game.dungeon.RoomSpace;
 import fad.game.equipment.Equipment;
+import fad.game.equipment.EquipmentType;
 import fad.game.equipment.EquipmentWeight;
 import fad.game.equipment.Scroll;
 import fad.game.equipment.SpellBook;
@@ -35,16 +36,20 @@ import fad.game.monster.Monster;
 import fad.game.monster.MonsterTrait;
 import fad.game.monster.MonsterType;
 import fad.game.monster.Reaction;
+import fad.game.party.HeroTrait;
 import fad.util.Util;
+import fad.view.HeroSelectionDialog;
 import fad.view.View;
 import fad.view.ViewUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -143,6 +148,20 @@ public class Controller {
                             //      through, open dialog to let user select which heroes enter next room.
                             //      By default, all heroes in that room are selected.
                             // TODO Any hero NOT selected to move will stay in current room
+                            if (model.getGame().getParty().getHeroes().stream().map(hero -> hero.getCurrentRoom()).distinct().count() == 1){
+                                // Party is all together
+                            }
+                            else {
+                                // Party is split
+                            }
+                            Room room = null;
+                            HeroSelectionDialog heroSelectionDialog = new HeroSelectionDialog(model, view, model.getGame().getParty().getHeroesInRoom(room), false);
+                            if (!heroSelectionDialog.isCancelled()){
+                                List<Hero> heroes = heroSelectionDialog.getSelectedHeroes();
+                                for (Hero hero: heroes){
+
+                                }
+                            }
                             return;
                         }
                         case PLAY_MOVE_HEROES:{
@@ -198,6 +217,9 @@ public class Controller {
                         }
                         case PLAY_END_COMBAT:{
                             ViewUtil.popupNotify("Combat", "Combat ended");
+                            model.getGame().getParty().getHeroes().stream().forEach(hero -> {
+                                hero.removeTrait(HeroTrait.PROTECTION);
+                            });
                             combatEncounter = null;
                             model.getGame().setPhaseStep(PhaseStep.PLAY_START_ENCOUNTER);
                             break;
@@ -455,12 +477,17 @@ public class Controller {
         if (room.isSearched())
             return;
 
-        // TODO Ask player if they want to search the room
-
-        RoomContents roomContents = RoomContentsTable.searchEmptyRoom(room.isCorridor());
-        System.out.println("You search the room and find " + roomContents);
-        if (roomContents != RoomContents.EMPTY){
-            handleRoomContents(room);
+        // Ask player if they want to search the room
+        if (ViewUtil.popupConfirm("Search", "Room is empty.  Do you want to search it?")){
+            room.setSearched(true);
+            RoomContents roomContents = RoomContentsTable.searchEmptyRoom(room.isCorridor());
+            if (roomContents != RoomContents.EMPTY){
+                ViewUtil.popupNotify("Search", "You search the room and find " + roomContents);
+                handleRoomContents(room);
+            }
+            else {
+                ViewUtil.popupNotify("Search", "You search the room and find nothing");
+            }
         }
     }
 
@@ -498,7 +525,7 @@ public class Controller {
             model.getGame().setPhaseStep(PhaseStep.PLAY_START_COMBAT);
         }
         else {
-            // TODO Ask player whether they want to attack or wait to see what reaction the monster will have
+            // Ask player whether they want to attack or wait to see what reaction the monster will have
             if (ViewUtil.popupConfirm("Monster Encounter", "Do you want to attack immediately?")){
                 // Attack monster first
                 monster.setReaction(Reaction.FIGHT);
@@ -630,7 +657,7 @@ public class Controller {
 
         Monster monster = encounter.getMonster();
         int monsterCount = monster.getType().isBoss()? 1: ((Minion) monster).getCount();
-        List<Hero> heroes = model.getGame().getParty().getHeroesInRoom(encounter.getRoom());
+        List<Hero> heroes = encounter.getHeroes();
 
         for (Hero hero: heroes){
             HeroCombatAction action = combatAssignments.getActions().get(hero);
@@ -641,9 +668,28 @@ public class Controller {
                     break;
                 }
                 case SWITCH_WEAPON:{
+                    // Store attacking weapon on back sling and ready back sling weapon
+                    Equipment hand1 = hero.getHand1();
+                    Equipment hand2 = hero.getHand2();
+                    Equipment back  = hero.getBackSlingItem();
+                    if (back == null){
+                        ViewUtil.popupNotify(hero.getName() + " does not have anything on his back");
+                        continue;
+                    }
+                    if (hand1 != null && hand1.getType() == hero.getAttackingWeapon().getType()){
+                        hero.setBackSlingItem(hand1);
+                        hero.setHand1(back);
+                        ViewUtil.popupNotify(hero.getName() + " swapped " + hand1.getName() + " with " + back.getName() + " in back sling");
+                    }
+                    else if (hand2 != null && hand2.getType() == hero.getAttackingWeapon().getType()){
+                        hero.setBackSlingItem(hand2);
+                        hero.setHand2(back);
+                        ViewUtil.popupNotify(hero.getName() + " swapped " + hand2.getName() + " with " + back.getName() + " in back sling");
+                    }
                     break;
                 }
                 case CAST_SPELL:{
+                    doHeroCastSpell(hero, encounter, null);
                     break;
                 }
             }
@@ -651,8 +697,6 @@ public class Controller {
     }
 
     private void doHeroAttackMonster(Hero attacker, Monster defender, boolean monsterOutnumbered){
-        // Wizards add +L when casting spells
-
         // Each hero rolls 1d6
         int wounds = Util.roll();
         // Warriors, elves, dwarves, and barbarians add +L
@@ -761,18 +805,11 @@ public class Controller {
     private void doCombatMonsterTurn(CombatEncounter encounter){
         encounter.adjTurns(1);
         Monster monster = encounter.getMonster();
+        int monsterCount = monster.getType().isBoss()? 1: ((Minion) monster).getCount();
+        List<Hero> heroes = encounter.getHeroes();
 
-        List<Monster> expandedMonsters = new ArrayList<>();
-        if (!monster.getType().isBoss()){
-            // Could be multiple vermin/minions
-            expandedMonsters.addAll(((Minion) monster).expand());
-        }
-        else {
-            expandedMonsters.add(monster);
-        }
-
-        Map<Monster, Hero> pairings = new HashMap<>();
-        Set<Hero> attackedHeroes = new HashSet<>();
+        // Hero -> number of monster attacks against Hero
+        Map<Hero, Integer> attacks = new HashMap<>();
 
         // Set targets
         // Depends on 
@@ -789,52 +826,106 @@ public class Controller {
         //    A single hero in corridor will be attacked by both monsters
         //    Wandering Monsters attack rearmost two heroes (no shield bonus)
         // Dragon breath will hit all heroes in corridor or room
-        for (Monster m: expandedMonsters){
-            // Choose Hero to attack
-            // If in a room and there are enough monsters, at least one monster will attack each hero.  
-            Hero target = null;
-
-            // First choose a Hero that is not being attacked
-            for (Hero hero: encounter.getHeroes()){
-                if (!attackedHeroes.contains(hero)){
-                    target = hero;
-                    break;
-                }
+        if (encounter.getRoom().isCorridor()){
+            monsterCount = 2;
+            if (monster.hasTrait(MonsterTrait.WANDERING)){
+                Collections.reverse(heroes);
             }
+            heroes = heroes.subList(0, Math.min(heroes.size(), 2));
+        }
 
-            if (target == null){
-                // Extra monsters will attack most hated heroes first, then lowest HP heroes.  Randomly select heroes if ties.
-                // TODO Look for hated heroes:
-                //   Trolls, goblins, and kobolds hate dwarves; orcs hate elves; undead hate clerics
-
-                if (target == null){
-                    // Look for lowest HP heroes
-                    int lowestHP = 999;
-                    List<Hero> lowestHPHeroes = new ArrayList<>();
-                    for (Hero hero: encounter.getHeroes()){
-                        if (hero.getLifePoints() < lowestHP){
-                            lowestHPHeroes.clear();
-                            lowestHPHeroes.add(hero);
-                        }
-                        else if (hero.getLifePoints() == lowestHP){
-                            lowestHPHeroes.add(hero);
+        if (monsterCount < heroes.size()){
+            // TODO Let user decide which Heroes get attacked
+            // Open pairing dialog
+        }
+        else {
+            int numAttacksPerHero = monsterCount / heroes.size();
+            int numAttacksRemaining = monsterCount % heroes.size();
+            for (Hero hero: heroes){
+                attacks.put(hero, numAttacksPerHero);
+            }
+            // Extra monsters will attack most hated heroes first
+            if (numAttacksRemaining > 0){
+                if (monster.getType() == MonsterType.TROLLS ||
+                        monster.getType() == MonsterType.GOBLINS ||
+                        monster.getType() == MonsterType.GOBLIN_SWARMLINGS){
+                    if (heroes.stream().anyMatch(hero -> hero.getType() == HeroType.DWARF)){
+                        List<Hero> dwarves = heroes.stream().filter(hero -> hero.getType() == HeroType.DWARF).collect(Collectors.toList());
+                        while (numAttacksRemaining > 0){
+                            for (Hero dwarf: dwarves){
+                                attacks.put(dwarf, attacks.get(dwarf) + 1);
+                                --numAttacksRemaining;
+                                if (numAttacksRemaining == 0)
+                                    break;
+                            }
                         }
                     }
-                    target = lowestHPHeroes.get(Util.nextInt(lowestHPHeroes.size()));
+                }
+                else if (monster.getType() == MonsterType.ORCS ||
+                        monster.getType() == MonsterType.ORC_BRUTE){
+                    if (heroes.stream().anyMatch(hero -> hero.getType() == HeroType.ELF)){
+                        List<Hero> elves = heroes.stream().filter(hero -> hero.getType() == HeroType.ELF).collect(Collectors.toList());
+                        while (numAttacksRemaining > 0){
+                            for (Hero elf: elves){
+                                attacks.put(elf, attacks.get(elf) + 1);
+                                --numAttacksRemaining;
+                                if (numAttacksRemaining == 0)
+                                    break;
+                            }
+                        }
+                    }
+                }
+                else if (monster.hasTrait(MonsterTrait.UNDEAD)){
+                    if (heroes.stream().anyMatch(hero -> hero.getType() == HeroType.CLERIC)){
+                        List<Hero> clerics = heroes.stream().filter(hero -> hero.getType() == HeroType.CLERIC).collect(Collectors.toList());
+                        while (numAttacksRemaining > 0){
+                            for (Hero cleric: clerics){
+                                attacks.put(cleric, attacks.get(cleric) + 1);
+                                --numAttacksRemaining;
+                                if (numAttacksRemaining == 0)
+                                    break;
+                            }
+                        }
+                    }
                 }
             }
-
-            pairings.put(m, target);
-            attackedHeroes.add(target);
+            // Then, lowest HP heroes.  Randomly select heroes if ties.
+            if (numAttacksRemaining > 0){
+                // Look for lowest HP heroes
+                int lowestHP = 999;
+                List<Hero> lowestHPHeroes = new ArrayList<>();
+                for (Hero hero: heroes){
+                    if (hero.getLifePoints() < lowestHP){
+                        lowestHPHeroes.clear();
+                        lowestHPHeroes.add(hero);
+                    }
+                    else if (hero.getLifePoints() == lowestHP){
+                        lowestHPHeroes.add(hero);
+                    }
+                }
+                
+                Collections.shuffle(lowestHPHeroes);
+                
+                while (numAttacksRemaining > 0){
+                    for (Hero hero: lowestHPHeroes){
+                        attacks.put(hero, attacks.get(hero) + 1);
+                        --numAttacksRemaining;
+                        if (numAttacksRemaining == 0)
+                            break;
+                    }
+                }
+            }
         }
 
         // Attack Heroes
-        for (Monster m: expandedMonsters){
-            doMonsterAttackHero(m, pairings.get(m));
+        for (Hero hero: attacks.keySet()){
+            for (int i = 0; i < attacks.get(hero); ++i){
+                doMonsterAttackHero(monster, hero, encounter);
+            }
         }
     }
 
-    private void doMonsterAttackHero(Monster attacker, Hero defender){
+    private void doMonsterAttackHero(Monster attacker, Hero defender, CombatEncounter encounter){
         int numAttacks = attacker.getNumAttacks();
         int damage = attacker.getNumDamagePerAttack();
 
@@ -844,24 +935,251 @@ public class Controller {
 
             if (v == 1){
                 // Always failure
+                System.out.println("Attack hit");
             }
             if (v == 6){
                 // Always successful defense
+                System.out.println("Attack missed");
             }
 
-            // TODO Modify as necessary
+            // Modify as necessary
             // Light armor: +1
+            if (defender.getArmor() != null && defender.getArmor().getWeight() == EquipmentWeight.LIGHT){
+                v += 1;
+            }
             // Heavy Armor: +2
+            if (defender.getArmor() != null && defender.getArmor().getWeight() == EquipmentWeight.HEAVY){
+                v += 2;
+            }
             // Shield: +1 (negated by Wandering monsters)
+            if (defender.isInHand(EquipmentType.SHIELD) && !attacker.hasTrait(MonsterTrait.WANDERING)){
+                v += 1;
+            }
             // Rogue: +L
+            if (defender.getType() == HeroType.ROGUE){
+                v += defender.getLevel();
+            }
             // Dwarf defending against a troll or giant: +1
+            if (defender.getType() == HeroType.DWARF && 
+                    (attacker.getType() == MonsterType.TROLLS || 
+                     attacker.getType() == MonsterType.GIANT_CENTIPEDES ||
+                     attacker.getType() == MonsterType.GIANT_SPIDER)){
+                v += 1;
+            }
             // Halfling defending against troll, giant, or ogre: +L
+            if (defender.getType() == HeroType.HALFLING && 
+                    (attacker.getType() == MonsterType.TROLLS || 
+                     attacker.getType() == MonsterType.GIANT_CENTIPEDES ||
+                     attacker.getType() == MonsterType.GIANT_SPIDER ||
+                     attacker.getType() == MonsterType.OGRE)){
+                v += defender.getLevel();
+            }
 
             // If value > monster level, hit is blocked
             // Otherwise, hero suffers damage
             if (v <= attacker.getLevel()){
+                // Check if defender can cast ESCAPE spell and ask if they want to cast it
+                if ((defender.getType() == HeroType.WIZARD || defender.getType() == HeroType.ELF)){
+                    Optional<Spell> escape = defender.getReadiedSpells().stream().filter(spell -> spell.getType() == SpellType.ESCAPE).findFirst();
+                    if (escape.isPresent()){
+                        if (ViewUtil.popupConfirm("Cast Spell?", "Do you want to cast Escape?")){
+                            doHeroCastSpell(defender, encounter, escape.get());
+                            return;
+                        }
+                    }
+                }
                 defender.adjLifePoints(-damage);
             }
         }
+    }
+
+    private void doHeroCastSpell(Hero hero, CombatEncounter encounter, Spell spell){
+        if (spell == null){
+            // TODO Open spell cast dialog to select spell/scroll to cast
+        }
+
+        switch(spell.getType()){
+            // Removes a curse or condition from a Hero
+            // May be cast by wizard or cleric only
+            case BLESSING:{
+                // Open Hero dialog to select target Hero
+                HeroSelectionDialog d = new HeroSelectionDialog(model, view, encounter.getHeroes(), true);
+                if (!d.isCancelled()){
+                    Hero target = d.getSelectedHero();
+                    // TODO Open ailment dialog to select curse or condition to remove
+                    ViewUtil.popupNotify("Combat", hero.getName() + " cast Blessing on " + target.getName() + " to remove a curse/condition");
+                    hero.getReadiedSpells().remove(spell);
+                }
+                else {
+                    ViewUtil.popupNotify("Combat", hero.getName() + " got confused and didn't cast the spell");
+                }
+                break;
+            }
+            // Works like an attack. Wizard adds level to roll.
+            // Does not affect dragons (but it does affect zombie dragons)
+            // Against minions, slays a number of creatures equal to wizard's die roll minus the level of the minions (minimum of one)
+            case FIREBALL:{
+                castFireball(hero, encounter);
+                break;
+            }
+            // Works like an attack. Wizard adds level to roll.
+            // Does not affect dragons (but it does affect zombie dragons)
+            // Against minions, kills just one, if it hits
+            // Against a boss, inflicts 2 damage, if it hits
+            case LIGHTNING_BOLT:{
+                castLightningBolt(hero, encounter);
+                break;
+            }
+            // Works like an attack. Wizard adds level to roll.
+            // Does not affect undead, dragons, and certain other monsters
+            // Defeats one boss or d6+L minions, if it hits
+            // Monsters put to sleep count as slain
+            case SLEEP:{
+                castSleep(hero, encounter);
+                break;
+            }
+            // Wizard disappears from current location and reappears in first room of the game.
+            // This spell may be cast in lieu of making a Defense roll, or it may be cast normally in the party's turn
+            // Works automatically
+            case ESCAPE:{
+                encounter.getHeroes().remove(hero);
+                hero.setCurrentRoom(model.getGame().getDungeon().getRooms().get(0));
+                hero.getReadiedSpells().remove(spell);
+                break;
+            }
+            // Gives +1 to single Hero's defense roll for duration of battle
+            case PROTECT:{
+                // Open Hero dialog to select target hero
+                HeroSelectionDialog d = new HeroSelectionDialog(model, view, encounter.getHeroes(), true);
+                if (!d.isCancelled()){
+                    Hero target = d.getSelectedHero();
+                    target.addTrait(HeroTrait.PROTECTION);
+                    ViewUtil.popupNotify("Combat", hero.getName() + " cast Protection on " + target.getName());
+                }
+                else {
+                    ViewUtil.popupNotify("Combat", hero.getName() + " got confused and didn't cast the spell");
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Works like an attack. Wizard adds level to roll.
+     * Does not affect dragons (but it does affect zombie dragons)
+     * Against minions, slays a number of creatures equal to wizard's die roll minus the level of the minions (minimum of one)
+     */
+    private boolean castFireball(Hero hero, CombatEncounter encounter){
+        Monster monster = encounter.getMonster();
+
+        if (monster.getType() == MonsterType.SMALL_DRAGON){
+            ViewUtil.popupNotify("Cannot cast fireball against dragons");
+            return false;
+        }
+
+        int hits = getSpellHits(hero, monster);
+        if (hits > 0){
+            int numKilled = hits - monster.getLevel();
+            if (numKilled < 1)
+                numKilled = 1;
+            
+            if (!monster.getType().isBoss()){
+                Minion minion = (Minion) monster;
+                numKilled = Math.min(numKilled, minion.getCount());
+                minion.adjCount(-numKilled);
+                ViewUtil.popupNotify("Combat", hero.getName() + " cast Fireball and killed " + numKilled + " " + monster.getType() + "s");
+            }
+            else {
+                int damage = Math.min(numKilled, monster.getHitpoints());
+                monster.adjHitpoints(-damage);
+                ViewUtil.popupNotify("Combat", hero.getName() + " cast Fireball and inflicted " + damage + " on " + monster.getType());
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Works like an attack. Wizard adds level to roll.
+     * Does not affect dragons (but it does affect zombie dragons)
+     * Against minions, kills just one, if it hits
+     * Against a boss, inflicts 2 damage, if it hits
+     */
+    private boolean castLightningBolt(Hero hero, CombatEncounter encounter){
+        Monster monster = encounter.getMonster();
+
+        if (monster.getType() == MonsterType.SMALL_DRAGON){
+            ViewUtil.popupNotify("Cannot cast lightning bolt against dragons");
+            return false;
+        }
+
+        int hits = getSpellHits(hero, monster);
+        if (hits > 0){
+            if (!monster.getType().isBoss()){
+                Minion minion = (Minion) monster;
+                minion.adjCount(-1);
+                ViewUtil.popupNotify("Combat", hero.getName() + " cast Lightning Bolt and killed 1 " + monster.getType());
+            }
+            else {
+                int damage = Math.min(2, monster.getHitpoints());
+                monster.adjHitpoints(-damage);
+                ViewUtil.popupNotify("Combat", hero.getName() + " cast Lightning Bolt and inflicted " + damage + " on " + monster.getType());
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Works like an attack. Wizard adds level to roll.
+     * Does not affect undead, dragons, and certain other monsters
+     * Defeats one boss or d6+L minions, if it hits
+     * Monsters put to sleep count as slain
+     */
+    private boolean castSleep(Hero hero, CombatEncounter encounter){
+        Monster monster = encounter.getMonster();
+
+        if (monster.getType() == MonsterType.SMALL_DRAGON || monster.hasTrait(MonsterTrait.UNDEAD)){
+            ViewUtil.popupNotify("Cannot cast sleep on " + monster.getType());
+            return false;
+        }
+
+        int hits = getSpellHits(hero, monster);
+        if (hits > 0){
+            if (!monster.getType().isBoss()){
+                Minion minion = (Minion) monster;
+                int numSleep = Math.min(Util.roll() + hero.getLevel(), minion.getCount());
+                minion.adjCount(-numSleep);
+                ViewUtil.popupNotify("Combat", hero.getName() + " cast Sleep on " + numSleep + " " + monster.getType() + "s");
+            }
+            else {
+                monster.adjHitpoints(-monster.getHitpoints());
+                ViewUtil.popupNotify("Combat", hero.getName() + " cast Sleep on " + monster.getType());
+            }
+        }
+
+        return true;
+
+    }
+
+    /**
+     * Get the number of hits when casting a spell
+     * @param attacker
+     * @param defender
+     * @return 
+     */
+    private int getSpellHits(Hero attacker, Monster defender){
+        // Hero rolls 1d6
+        int wounds = Util.roll();
+
+        int modifier = 0;
+        switch(attacker.getSpellCastType()){
+            case D6_PLUS_LEVEL:
+                modifier = attacker.getLevel();
+                break;
+        }
+
+        int hits = wounds + modifier;
+        return hits;
     }
 }

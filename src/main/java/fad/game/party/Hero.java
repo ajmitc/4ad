@@ -7,7 +7,9 @@ import fad.game.equipment.Weapon;
 import fad.game.spell.Spell;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Hero {
     protected String name;
@@ -26,7 +28,7 @@ public abstract class Hero {
     protected int lifePoints;
     //protected List<Clue> clues = new ArrayList<>();
     //protected List<Ability> abilities = new ArrayList<>();
-    protected List<HeroTrait> traits = new ArrayList<>();
+    protected Set<HeroTrait> traits = new HashSet<>();
 
     protected List<Spell> readiedSpells = new ArrayList<>();
     protected int maxReadiedSpells = 0;
@@ -246,12 +248,16 @@ public abstract class Hero {
         this.maxReadiedSpells = maxReadiedSpells;
     }
 
-    public List<HeroTrait> getTraits() {
+    public Set<HeroTrait> getTraits() {
         return traits;
     }
 
     public void addTrait(HeroTrait trait) {
         this.traits.add(trait);
+    }
+
+    public void removeTrait(HeroTrait trait){
+        this.traits.remove(trait);
     }
 
     public Room getCurrentRoom() {

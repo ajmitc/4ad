@@ -50,4 +50,9 @@ public class Minion extends Monster{
         if (this.count < 0)
             this.count = 0;
     }
+
+    @Override
+    public String toString(){
+        return super.toString() + " (x" + count + ")";
+    }
 }

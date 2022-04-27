@@ -189,4 +189,7 @@ public abstract class Monster {
         this.fireBreathLevel = fireBreathLevel;
     }
 
+    public String toString(){
+        return "Level " + level + " " + type.getName();
+    }
 }

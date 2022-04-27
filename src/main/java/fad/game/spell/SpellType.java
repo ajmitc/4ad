@@ -6,6 +6,7 @@ package fad.game.spell;
  */
 public enum SpellType {
     // Removes a curse or condition from a Hero
+    // May be cast by wizard or cleric only
     BLESSING("Blessing"),
     // Works like an attack. Wizard adds level to roll.
     // Does not affect dragons (but it does affect zombie dragons)

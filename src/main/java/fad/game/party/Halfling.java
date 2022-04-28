@@ -8,28 +8,23 @@ import fad.game.equipment.Weapon;
 import fad.game.equipment.WeaponAttackType;
 import fad.game.monster.Minion;
 import fad.game.monster.Monster;
+import fad.game.monster.MonsterType;
 import fad.util.Util;
 
 /**
- * Adds level on rolls to disarm traps and defense rolls
- * Adds level to attack rolls only when attacking an outnumbered minion (more surviving party members than # minions)
- * Allowed armor: Light armor
- * Allowed weapons: light weapon, sling
- * Starting equipment: rope, lock picks, light armor, light hand weapon
- * Starting wealth: 3d6
- * Life: 3 + level.
  */
-public class Rogue extends Hero{
-    public Rogue(){
+public class Halfling extends Hero{
+    public Halfling(){
         super();
-        setType(HeroType.ROGUE);
+        setType(HeroType.HALFLING);
+        /*
         setHand1(new Weapon("Dagger", WeaponAttackType.SLASHING));
-        getHand1().setWeight(EquipmentWeight.LIGHT);
         //setHand2(new Weapon("Shield", EquipmentType.WEAPON, WeaponAttackType.CRUSHING));
         getInventory().add(new Equipment("Rope", EquipmentType.ROPE));
         getInventory().add(new Equipment("Lockpicks", EquipmentType.LOCK_PICKS));
         setArmor(new Equipment("Light Armor", EquipmentType.ARMOR, EquipmentWeight.LIGHT));
         setGold(Util.roll3d6());
+        */
         setLifePoints(getMaxLifePoints());
     }
 
@@ -39,17 +34,15 @@ public class Rogue extends Hero{
     }
 
     @Override
-    public int getAttackModifier(CombatEncounter encounter){
-        int modifier = super.getAttackModifier(encounter);
-        if (encounter.getMonster().getType().isMinion() && ((Minion) encounter.getMonster()).getCount() < encounter.getHeroes().size())
-            modifier += getLevel();
-        return modifier;
-    }
-
-    @Override
     public int getDefenseModifier(CombatEncounter encounter){
         int modifier = super.getDefenseModifier(encounter);
-        modifier += getLevel();
+        // Halfling defending against troll, giant, or ogre: +L
+        if (encounter.getMonster().getType() == MonsterType.TROLLS ||
+                encounter.getMonster().getType() == MonsterType.GIANT_CENTIPEDES ||
+                encounter.getMonster().getType() == MonsterType.GIANT_SPIDER ||
+                encounter.getMonster().getType() == MonsterType.OGRE){
+            modifier += getLevel();
+        }
         return modifier;
     }
 }

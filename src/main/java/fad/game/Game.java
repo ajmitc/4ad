@@ -32,6 +32,7 @@ public class Game {
 
     public void setPhase(Phase phase) {
         this.phase = phase;
+        this.phaseStep = PhaseStep.START_PHASE;
     }
 
     public PhaseStep getPhaseStep() {

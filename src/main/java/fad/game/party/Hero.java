@@ -1,9 +1,13 @@
 package fad.game.party;
 
+import fad.game.combat.CombatEncounter;
 import fad.game.dungeon.Room;
 import fad.game.equipment.Equipment;
 import fad.game.equipment.EquipmentType;
+import fad.game.equipment.EquipmentWeight;
 import fad.game.equipment.Weapon;
+import fad.game.monster.Monster;
+import fad.game.monster.MonsterTrait;
 import fad.game.spell.Spell;
 
 import java.util.ArrayList;
@@ -87,7 +91,9 @@ public abstract class Hero {
     protected int marchingOrder = 1;
 
     public Hero(){
-
+        this.attackType    = AttackType.D6;
+        this.spellCastType = AttackType.D6;
+        this.defenseType   = DefenseType.D6;
     }
 
     /**
@@ -124,6 +130,30 @@ public abstract class Hero {
         return attackType;
     }
 
+    public int getAttackModifier(CombatEncounter encounter){
+        int modifier = 0;
+        switch(attackType){
+            case D6_MINUS_TWO:
+                modifier -= 2;
+                break;
+            case D6_PLUS_ONE:
+                modifier += 1;
+                break;
+            case D6_PLUS_LEVEL:
+                modifier += getLevel();
+                break;
+            case D6_PLUS_HALF_LEVEL:
+                modifier += (getLevel() / 2);
+                break;
+            case D6:
+            default:
+                break;
+        }
+        Weapon weapon = getAttackingWeapon();
+        modifier += weapon.getAttackModifier(encounter);
+        return modifier;
+    }
+
     public void setAttackType(AttackType attackType) {
         this.attackType = attackType;
     }
@@ -134,6 +164,28 @@ public abstract class Hero {
 
     public void setSpellCastType(AttackType spellCastType) {
         this.spellCastType = spellCastType;
+    }
+
+    public int getSpellCastModifier(){
+        int modifier = 0;
+        switch(spellCastType){
+            case D6_MINUS_TWO:
+                modifier -= 2;
+                break;
+            case D6_PLUS_ONE:
+                modifier += 1;
+                break;
+            case D6_PLUS_LEVEL:
+                modifier += getLevel();
+                break;
+            case D6_PLUS_HALF_LEVEL:
+                modifier += (getLevel() / 2);
+                break;
+            case D6:
+            default:
+                break;
+        }
+        return modifier;
     }
 
     public AttackType getSolvePuzzleType() {
@@ -200,6 +252,25 @@ public abstract class Hero {
 
     public DefenseType getDefenseType() {
         return defenseType;
+    }
+
+    public int getDefenseModifier(CombatEncounter encounter){
+        int modifier = 0;
+        if (getArmor() != null){
+            // Light armor: +1
+            if (getArmor().getWeight() == EquipmentWeight.LIGHT){
+                modifier += 1;
+            }
+            // Heavy Armor: +2
+            if (getArmor().getWeight() == EquipmentWeight.HEAVY){
+                modifier += 2;
+            }
+        }
+        // Shield: +1 (negated by Wandering monsters)
+        if (isInHand(EquipmentType.SHIELD) && !encounter.getMonster().hasTrait(MonsterTrait.WANDERING)){
+            modifier += 1;
+        }
+        return modifier;
     }
 
     public void setDefenseType(DefenseType defenseType) {

@@ -1,9 +1,12 @@
 package fad.game.party;
 
+import fad.game.combat.CombatEncounter;
 import fad.game.equipment.Equipment;
 import fad.game.equipment.EquipmentType;
+import fad.game.equipment.EquipmentWeight;
 import fad.game.equipment.Weapon;
 import fad.game.equipment.WeaponAttackType;
+import fad.game.monster.MonsterType;
 import fad.util.Util;
 
 /**
@@ -30,16 +33,26 @@ public class Dwarf extends Hero{
         type = HeroType.DWARF;
         attackType = AttackType.D6_PLUS_LEVEL;
         defenseType = DefenseType.D6;
-        hand1 = new Weapon(EquipmentType.ONE_HAND_WEAPON.getName(), EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING);
-        hand2 = new Weapon(EquipmentType.SHIELD.getName(), EquipmentType.SHIELD, null);
-        armor = new Equipment("Light Armor", EquipmentType.LIGHT_ARMOR);
-        gold = Util.roll3d6();
-        level = 1;
-        lifePoints = 5 + level;
+        hand1 = new Weapon("Hand Axe", WeaponAttackType.SLASHING);
+        hand2 = new Equipment(EquipmentType.SHIELD.getName(), EquipmentType.SHIELD);
+        armor = new Equipment("Light Armor", EquipmentType.ARMOR, EquipmentWeight.LIGHT);
+        setGold(Util.roll3d6());
+        setLifePoints(getMaxLifePoints());
     }
 
     @Override
     public int getMaxLifePoints(){
         return 5 + level;
+    }
+
+    @Override
+    public int getDefenseModifier(CombatEncounter encounter){
+        int modifier = super.getDefenseModifier(encounter);
+        if (encounter.getMonster().getType() == MonsterType.TROLLS || 
+                encounter.getMonster().getType() == MonsterType.GIANT_CENTIPEDES ||
+                encounter.getMonster().getType() == MonsterType.GIANT_SPIDER){
+            modifier += 1;
+        }
+        return modifier;
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Room {
+    private String id;
     private boolean visited = false;
     private boolean searched = false;
     private boolean corridor;
@@ -14,6 +15,10 @@ public class Room {
     private RoomContents roomContents;
 
     private Monster monster;
+
+    public Room(String id){
+        this.id = id;
+    }
 
     public void assignLocationCoordinates(int startingX, int startingY){
         for (int r = 0; r < spaces.size(); ++r){
@@ -80,4 +85,6 @@ public class Room {
     public void setMonster(Monster monster) {
         this.monster = monster;
     }
+
+    public String toString(){ return id; }
 }

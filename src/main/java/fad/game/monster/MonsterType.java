@@ -65,6 +65,10 @@ public enum MonsterType {
         return !boss;
     }
 
+    public boolean isSkeleton(){
+        return this == SKELETAL_RATS || this == SKELETONS;
+    }
+
     @Override
     public String toString() {
         return name;

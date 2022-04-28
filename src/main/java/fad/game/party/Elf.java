@@ -2,6 +2,8 @@ package fad.game.party;
 
 import fad.game.equipment.Equipment;
 import fad.game.equipment.EquipmentType;
+import fad.game.equipment.EquipmentWeight;
+import fad.game.equipment.TwoHandedWeapon;
 import fad.game.equipment.Weapon;
 import fad.game.equipment.WeaponAttackType;
 import fad.util.Util;
@@ -21,12 +23,14 @@ import fad.util.Util;
  */
 public class Elf extends Hero{
     public Elf(){
+        super();
+        setType(HeroType.ELF);
         setAttackType(AttackType.D6_PLUS_LEVEL);
         setSpellCastType(AttackType.D6_PLUS_LEVEL);
         setDefenseType(DefenseType.D6);
-        setBackSlingItem(new Weapon("Sword", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING));
-        setHand1(new Weapon("Bow", EquipmentType.TWO_HAND_WEAPON, WeaponAttackType.RANGED));
-        setArmor(new Equipment("Light Armor", EquipmentType.LIGHT_ARMOR));
+        setBackSlingItem(new Weapon("Sword", WeaponAttackType.SLASHING));
+        setHand1(new TwoHandedWeapon("Bow", WeaponAttackType.RANGED));
+        setArmor(new Equipment("Light Armor", EquipmentType.ARMOR, EquipmentWeight.LIGHT));
         setGold(Util.roll2d6());
         setLifePoints(getMaxLifePoints());
 
@@ -39,7 +43,7 @@ public class Elf extends Hero{
 
     @Override
     public int getMaxReadiedSpells(){
-        if ((armor == null || armor.getType() == EquipmentType.LIGHT_ARMOR) && !isInHand(EquipmentType.SHIELD))
+        if ((armor == null || armor.getWeight() == EquipmentWeight.LIGHT) && !isInHand(EquipmentType.SHIELD))
             return level;
         return 0;
     }

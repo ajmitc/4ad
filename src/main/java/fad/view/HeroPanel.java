@@ -2,9 +2,12 @@ package fad.view;
 
 import fad.Model;
 import fad.game.party.Hero;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.stream.Collectors;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,6 +38,8 @@ public class HeroPanel extends JPanel{
         super();
         this.model = model;
         this.view = view;
+
+        setPreferredSize(new Dimension(400, 300));
 
         lblName = new JLabel();
         lblHeroType = new JLabel();
@@ -106,6 +111,8 @@ public class HeroPanel extends JPanel{
                 .add(btnOpenInventory)
                 .add(btnCastSpell)
                 ;
+
+        setBorder(BorderFactory.createLineBorder(Color.black));
     }
 
     public void refresh(){

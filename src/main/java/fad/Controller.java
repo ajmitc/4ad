@@ -19,13 +19,9 @@ import fad.game.dungeon.Room;
 import fad.game.dungeon.RoomFactory;
 import fad.game.dungeon.RoomSpace;
 import fad.game.equipment.Equipment;
-import fad.game.equipment.EquipmentType;
-import fad.game.equipment.EquipmentWeight;
 import fad.game.equipment.Scroll;
 import fad.game.equipment.SpellBook;
 import fad.game.equipment.TreasureEquipment;
-import fad.game.equipment.Weapon;
-import fad.game.equipment.WeaponAttackType;
 import fad.game.party.Hero;
 import fad.game.party.HeroType;
 import fad.game.spell.Spell;
@@ -51,9 +47,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Controller {
+    private static final Logger logger = Logger.getLogger(Controller.class.getName());
+
     private Model model;
     private View view;
 
@@ -81,6 +80,7 @@ public class Controller {
         view.getMainMenuPanel().getBtnNewGame().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                logger.info("Creating new game");
                 Game game = new Game();
                 model.setGame(game);
                 view.showGame();
@@ -93,10 +93,13 @@ public class Controller {
         if (model.getGame() == null)
             return;
         while (model.getGame().getPhase() != Phase.GAMEOVER){
+            view.refresh();
+            logger.info("Running " + model.getGame().getPhase() + "/" + model.getGame().getPhaseStep());
             switch(model.getGame().getPhase()){
                 case SETUP:{
                     switch(model.getGame().getPhaseStep()){
                         case START_PHASE:{
+                            logger.info("Creating heroes");
                             // TODO Let player select heroes
                             model.getGame().getParty().createHero(HeroType.WARRIOR);
                             model.getGame().getParty().createHero(HeroType.ELF);
@@ -106,6 +109,9 @@ public class Controller {
                             // TODO Let Dwarf choose starting equipment
                             // TODO Let Elf and Wizard ready spells
 
+                            view.getGamePanel().getPartyPanel().assignHeroes();
+
+                            logger.info("Creating dungeon");
                             createDungeon();
                             model.getGame().setPhaseStep(PhaseStep.END_PHASE);
                             break;
@@ -140,8 +146,8 @@ public class Controller {
                             //      Final Boss will have +1 lifepoint, +1 number of attacks, and automatically fights to the death.  
                             //      The Boss's GP treasure is 3x (or increased by 100GP, whichever is better).  If it has a magic item, it has 2 magic items instead.
                             
-                            model.getGame().setPhaseStep(PhaseStep.PLAY_SELECT_ROOMS_TO_MOVE);
-                            break;
+                            //model.getGame().setPhaseStep(PhaseStep.PLAY_SELECT_ROOMS_TO_MOVE);
+                            return;
                         }
                         case PLAY_SELECT_ROOMS_TO_MOVE:{
                             // TODO If party is all together, let user select door or hallway to pass 
@@ -237,10 +243,12 @@ public class Controller {
 
     public void createDungeon(){
         Room entrance = RoomFactory.createEntranceRoom();
+        logger.info("Created Entrance Room " + entrance);
         model.getGame().getDungeon().getRooms().add(entrance);
 
         // Add rooms off all entrance connection points
-        model.getGame().getDungeon().addConnectingRooms(entrance);
+        //logger.info("Adding connecting rooms");
+        //model.getGame().getDungeon().addConnectingRooms(entrance);
     }
 
     /**
@@ -655,8 +663,6 @@ public class Controller {
     private void doCombatHerosTurn(CombatEncounter encounter){
         encounter.adjTurns(1);
 
-        Monster monster = encounter.getMonster();
-        int monsterCount = monster.getType().isBoss()? 1: ((Minion) monster).getCount();
         List<Hero> heroes = encounter.getHeroes();
 
         for (Hero hero: heroes){
@@ -664,7 +670,7 @@ public class Controller {
 
             switch(action){
                 case ATTACK:{
-                    doHeroAttackMonster(hero, monster, heroes.size() > monsterCount);
+                    doHeroAttackMonster(hero, encounter);
                     break;
                 }
                 case SWITCH_WEAPON:{
@@ -696,52 +702,17 @@ public class Controller {
         }
     }
 
-    private void doHeroAttackMonster(Hero attacker, Monster defender, boolean monsterOutnumbered){
+    private void doHeroAttackMonster(Hero attacker, CombatEncounter encounter){
         // Each hero rolls 1d6
         int wounds = Util.roll();
-        // Warriors, elves, dwarves, and barbarians add +L
-        int modifier = 0;
-        if (attacker.getType() == HeroType.WARRIOR || 
-                attacker.getType() == HeroType.ELF || 
-                attacker.getType() == HeroType.DWARF || 
-                attacker.getType() == HeroType.BARBARIAN){
-            modifier = attacker.getLevel();
-        }
-        // Clerics add +1/2L (rounded down), but +L against undead
-        else if (attacker.getType() == HeroType.CLERIC){
-            if (defender.hasTrait(MonsterTrait.UNDEAD))
-                modifier += attacker.getLevel();
-            else
-                modifier += (attacker.getLevel() / 2);
-        }
-        // Rogues add +L when attacking outnumbered minions
-        else if (attacker.getType() == HeroType.ROGUE){
-            if (monsterOutnumbered)
-                modifier += attacker.getLevel();
-        }
 
-        // Two handed weapons adds +1
-        Weapon weapon = attacker.getAttackingWeapon();
-        if (weapon.getNumSlotUsage() > 1){
-            modifier += 1;
-        }
-
-        // Light weapons add -1
-        if (weapon.getWeight() == EquipmentWeight.LIGHT){
-            modifier -= 1;
-        }
-
-        // Crushing weapons add +1 to skeletons
-        if (weapon.getAttackType() == WeaponAttackType.CRUSHING && 
-                (defender.getType() == MonsterType.SKELETONS || defender.getType() == MonsterType.SKELETAL_RATS)){
-            modifier += 1;
-        }
-
-        if (modifier < 0)
-            modifier = 0;
+        int modifier = attacker.getAttackModifier(encounter);
 
         int totalDamage = wounds + modifier;
+        if (totalDamage < 0)
+            totalDamage = 0;
 
+        Monster defender = encounter.getMonster();
         if (!defender.getType().isBoss()){
             Minion minion = (Minion) defender;
 
@@ -936,44 +907,16 @@ public class Controller {
             if (v == 1){
                 // Always failure
                 System.out.println("Attack hit");
+                v = -20;
             }
             if (v == 6){
                 // Always successful defense
                 System.out.println("Attack missed");
+                continue;
             }
 
             // Modify as necessary
-            // Light armor: +1
-            if (defender.getArmor() != null && defender.getArmor().getWeight() == EquipmentWeight.LIGHT){
-                v += 1;
-            }
-            // Heavy Armor: +2
-            if (defender.getArmor() != null && defender.getArmor().getWeight() == EquipmentWeight.HEAVY){
-                v += 2;
-            }
-            // Shield: +1 (negated by Wandering monsters)
-            if (defender.isInHand(EquipmentType.SHIELD) && !attacker.hasTrait(MonsterTrait.WANDERING)){
-                v += 1;
-            }
-            // Rogue: +L
-            if (defender.getType() == HeroType.ROGUE){
-                v += defender.getLevel();
-            }
-            // Dwarf defending against a troll or giant: +1
-            if (defender.getType() == HeroType.DWARF && 
-                    (attacker.getType() == MonsterType.TROLLS || 
-                     attacker.getType() == MonsterType.GIANT_CENTIPEDES ||
-                     attacker.getType() == MonsterType.GIANT_SPIDER)){
-                v += 1;
-            }
-            // Halfling defending against troll, giant, or ogre: +L
-            if (defender.getType() == HeroType.HALFLING && 
-                    (attacker.getType() == MonsterType.TROLLS || 
-                     attacker.getType() == MonsterType.GIANT_CENTIPEDES ||
-                     attacker.getType() == MonsterType.GIANT_SPIDER ||
-                     attacker.getType() == MonsterType.OGRE)){
-                v += defender.getLevel();
-            }
+            v += defender.getDefenseModifier(encounter);
 
             // If value > monster level, hit is blocked
             // Otherwise, hero suffers damage
@@ -1172,12 +1115,7 @@ public class Controller {
         // Hero rolls 1d6
         int wounds = Util.roll();
 
-        int modifier = 0;
-        switch(attacker.getSpellCastType()){
-            case D6_PLUS_LEVEL:
-                modifier = attacker.getLevel();
-                break;
-        }
+        int modifier = attacker.getSpellCastModifier();
 
         int hits = wounds + modifier;
         return hits;

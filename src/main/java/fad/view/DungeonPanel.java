@@ -1,6 +1,7 @@
 package fad.view;
 
 import fad.Model;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
@@ -20,7 +21,7 @@ public class DungeonPanel extends JPanel{
     }
 
     public void refresh(){
-
+        repaint();
     }
 
     @Override
@@ -30,6 +31,10 @@ public class DungeonPanel extends JPanel{
         }
 
         Graphics2D g = (Graphics2D) graphics;
+        g.setColor(Color.white);
+        g.fillRect(0, 0, getWidth(), getHeight());
 
+        g.setColor(Color.black);
+        g.drawLine(0, 0, 100, 100);
     }
 }

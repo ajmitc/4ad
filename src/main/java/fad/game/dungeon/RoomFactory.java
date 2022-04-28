@@ -12,7 +12,7 @@ public class RoomFactory {
     public static Room createRoom(){
         int v = Util.rolld66();
         String[] def = getRoomDefinition(v);
-        Room room = def2Room(def);
+        Room room = def2Room(v, def);
         // TODO Set corridor value
         return room;
     }
@@ -20,7 +20,7 @@ public class RoomFactory {
     public static Room createEntranceRoom(){
         int v = Util.roll();
         String[] def = getEntranceRoomDefinition(v);
-        Room room = def2Room(def);
+        Room room = def2Room(v, def);
         // Set corridor value
         if (v == 3 || v == 5)
             room.setCorridor(true);
@@ -256,8 +256,8 @@ public class RoomFactory {
         return new String[]{};
     }
 
-    private static Room def2Room(String[] def){
-        Room room = new Room();
+    private static Room def2Room(int id, String[] def){
+        Room room = new Room("" + id);
         for (int r = def.length - 1; r >= 0; --r){
             List<RoomSpace> row = new ArrayList<>();
             room.getSpaces().add(row);

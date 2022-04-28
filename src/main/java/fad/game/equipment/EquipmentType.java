@@ -1,14 +1,15 @@
 package fad.game.equipment;
 
 public enum EquipmentType {
-    ONE_HAND_WEAPON("One-handed weapon"),
-    TWO_HAND_WEAPON("Two-handed weapon"),
-    LIGHT_ARMOR("Light Armor"),
-    HEAVY_ARMOR("Heavy Armor"),
+    WEAPON("weapon"),
+    ARMOR("Armor"),
     SHIELD("Shield"),
-    LANTERN("Lantern"),
+
     BANDAGES("Bandages"),
     HOLY_WATER_VIAL("Holy Water Vial"),
+    LANTERN("Lantern"),
+    LOCK_PICKS("Lockpicks"),
+    ROPE("Rope"),
     SCROLL("Scroll"),
     SPELL_BOOK("Spell Book"),
     TREASURE("Treasure"),

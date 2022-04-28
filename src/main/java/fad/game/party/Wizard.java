@@ -23,14 +23,13 @@ public class Wizard extends Hero{
 
     public Wizard(){
         super();
-        
         name = "Gandolf";
         type = HeroType.WIZARD;
         attackType = AttackType.D6;
         spellCastType = AttackType.D6_PLUS_LEVEL;
         solvePuzzleType = AttackType.D6_PLUS_LEVEL;
         defenseType = DefenseType.D6;
-        hand1 = new Weapon("Knife", EquipmentType.ONE_HAND_WEAPON, WeaponAttackType.SLASHING);
+        hand1 = new Weapon("Knife", WeaponAttackType.SLASHING);
         hand1.setWeight(EquipmentWeight.LIGHT);
         inventory.add(new Equipment("Spell Book", EquipmentType.SPELL_BOOK));
         inventory.add(new Equipment("Writing Implements", EquipmentType.WRITING_IMPLEMENTS));

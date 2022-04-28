@@ -22,8 +22,13 @@ public class Equipment {
     public Equipment(){}
 
     public Equipment(String name, EquipmentType type){
+        this(name, type, EquipmentWeight.NORMAL);
+    }
+
+    public Equipment(String name, EquipmentType type, EquipmentWeight weight){
         this.name = name;
         this.type = type;
+        this.weight = weight;
     }
 
     public String getName() {

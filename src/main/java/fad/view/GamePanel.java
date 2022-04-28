@@ -22,10 +22,21 @@ public class GamePanel extends JPanel{
 
         partyPanel = new PartyPanel(model, view);
         dungeonPanel = new DungeonPanel(model, view);
+
+        add(dungeonPanel, BorderLayout.CENTER);
+        add(partyPanel, BorderLayout.EAST);
     }
 
     public void refresh(){
         partyPanel.refresh();
         dungeonPanel.refresh();
+    }
+
+    public PartyPanel getPartyPanel() {
+        return partyPanel;
+    }
+
+    public DungeonPanel getDungeonPanel() {
+        return dungeonPanel;
     }
 }

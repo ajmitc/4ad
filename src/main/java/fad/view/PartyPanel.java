@@ -1,6 +1,7 @@
 package fad.view;
 
 import fad.Model;
+import fad.game.party.Hero;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,17 @@ public class PartyPanel extends JPanel{
         heroPanels.add(new HeroPanel(model, view));
         heroPanels.add(new HeroPanel(model, view));
         heroPanels.add(new HeroPanel(model, view));
+
+        for (HeroPanel heroPanel: heroPanels){
+            add(heroPanel);
+        }
+    }
+
+    public void assignHeroes(){
+        for (int i = 0; i < model.getGame().getParty().getHeroes().size(); ++i){
+            Hero hero = model.getGame().getParty().getHeroes().get(i);
+            heroPanels.get(i).setHero(hero);
+        }
     }
 
     public void refresh(){

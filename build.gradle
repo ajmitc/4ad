@@ -1,2 +1,20 @@
 
 apply plugin: 'java'
+
+version = 1.0
+
+repositories{
+    mavenCentral()
+}
+
+jar {
+    archiveBaseName = "4ad"
+
+    manifest {
+        attributes "Manifest-Version": "1.0",
+                "Built-By": "Aaron Mitchell",
+                "Created-By": "Aaron Mitchell",
+                "Class-Path": configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+                "Main-Class": "fad.Main"
+    }
+}

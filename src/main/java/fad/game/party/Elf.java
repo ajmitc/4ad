@@ -24,6 +24,7 @@ import fad.util.Util;
 public class Elf extends Hero{
     public Elf(){
         super();
+        setName("Legolas");
         setType(HeroType.ELF);
         setAttackType(AttackType.D6_PLUS_LEVEL);
         setSpellCastType(AttackType.D6_PLUS_LEVEL);

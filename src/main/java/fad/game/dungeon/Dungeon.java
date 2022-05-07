@@ -2,6 +2,7 @@ package fad.game.dungeon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Dungeon {
     public static final int ENTRANCE_X = 100;
@@ -115,5 +116,9 @@ public class Dungeon {
 
     public List<Room> getRooms() {
         return rooms;
+    }
+
+    public List<RoomSpace> getRoomSpaces(){
+        return rooms.stream().map(room -> room.getAllSpaces()).flatMap(List::stream).collect(Collectors.toList());
     }
 }

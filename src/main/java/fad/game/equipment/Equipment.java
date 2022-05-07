@@ -74,16 +74,21 @@ public class Equipment {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(name);
-        sb.append("(");
-        sb.append(type);
-        sb.append(")");
+        if (!name.equals(type.getName())) {
+            sb.append(" (");
+            sb.append(type);
+            sb.append(")");
+        }
+        if (numSlotUsage > 1){
+            sb.append(" 2-Handed");
+        }
         if ((this instanceof Weapon) && ((Weapon) this).getAttackType() == WeaponAttackType.RANGED)
             sb.append(" RANGED");
         if (weight != EquipmentWeight.NORMAL){
             sb.append(" ");
             sb.append(weight);
         }
-        if (numUses != 1){
+        if (numUses > 1){
             sb.append(" x");
             sb.append(numUses);
         }

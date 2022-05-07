@@ -36,7 +36,7 @@ public class GridBagLayoutHelper {
 
     public GridBagLayoutHelper add(Component component){
         container.add(component, constraints);
-        constraints.gridx += 1;
+        constraints.gridx += constraints.gridwidth;
         return this;
     }
 

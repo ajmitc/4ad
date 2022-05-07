@@ -2,8 +2,10 @@ package fad.view;
 
 import fad.Model;
 import fad.game.party.Hero;
-import java.awt.Color;
-import java.awt.Dimension;
+import fad.view.component.AttributeTitleLabel;
+import fad.view.component.AttributeValueLabel;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.stream.Collectors;
@@ -29,7 +31,6 @@ public class HeroPanel extends JPanel{
     private JLabel lblGold;
     private JLabel lblLevel;
     private JLabel lblLifePoints;
-    private JLabel lblMaxLifePoints;
     private JButton btnCastSpell;
     private JLabel lblReadiedSpells;
     private JLabel lblMaxReadiedSpells;
@@ -42,48 +43,42 @@ public class HeroPanel extends JPanel{
         setPreferredSize(new Dimension(400, 300));
 
         lblName = new JLabel();
-        lblHeroType = new JLabel();
-        lblAttackType = new JLabel();
-        lblDefenseType = new JLabel();
-        lblGold = new JLabel();
-        lblLevel = new JLabel();
-        lblLifePoints = new JLabel();
-        lblMaxLifePoints = new JLabel();
-        lblReadiedSpells = new JLabel();
-        lblMaxReadiedSpells = new JLabel();
+        lblHeroType = new AttributeValueLabel();
+        lblAttackType = new AttributeValueLabel();
+        lblDefenseType = new AttributeValueLabel();
+        lblGold = new AttributeValueLabel();
+        lblLevel = new AttributeValueLabel();
+        lblLifePoints = new AttributeValueLabel();
+        lblReadiedSpells = new AttributeValueLabel();
+        lblMaxReadiedSpells = new AttributeValueLabel();
+
+        lblName.setFont(new Font("Serif", Font.BOLD, 16));
 
         btnOpenInventory = new JButton("Inventory");
         btnCastSpell = new JButton("Cast Spell");
 
-        JLabel lblAttackTitle = new JLabel("Attack: ");
-        JLabel lblDefenseTitle = new JLabel("Defense: ");
-        JLabel lblGoldTitle = new JLabel("Gold: ");
-        JLabel lblLevelTitle = new JLabel("Level ");
-        JLabel lblLifePointsTitle = new JLabel("HP: ");
-        JLabel lblMaxLifePointsTitle = new JLabel("/");
-        JLabel lblReadiedSpellsTitle = new JLabel("Spells: ");
-        JLabel lblMaxReadiedSpellsTitle = new JLabel("Max Spells: ");
+        JLabel lblAttackTitle = new AttributeTitleLabel("Attack: ");
+        JLabel lblDefenseTitle = new AttributeTitleLabel("Defense: ");
+        JLabel lblGoldTitle = new AttributeTitleLabel("Gold: ");
+        //JLabel lblLevelTitle = new AttributeTitleLabel("Level ");
+        JLabel lblLifePointsTitle = new AttributeTitleLabel("HP: ");
+        JLabel lblReadiedSpellsTitle = new AttributeTitleLabel("Spells: ");
+        JLabel lblMaxReadiedSpellsTitle = new AttributeTitleLabel("Max Spells: ");
 
         // Layout panel
         new GridBagLayoutHelper(this)
-                .setGridWidth(6)
+                .setGridWidth(2)
                 .add(lblName)
-                .nextRow()
-
-                .resetGridWidth()
-                .add(lblLevelTitle)
+                //.add(lblLevelTitle)
+                .setGridWidth(1)
                 .add(lblLevel)
-                .setGridWidth(4)
                 .add(lblHeroType)
                 .nextRow()
 
                 .resetGridWidth()
                 .add(lblAttackTitle)
-                .setGridWidth(2)
                 .add(lblAttackType)
-                .setGridWidth(1)
                 .add(lblDefenseTitle)
-                .setGridWidth(2)
                 .add(lblDefenseType)
                 .nextRow()
 
@@ -92,22 +87,17 @@ public class HeroPanel extends JPanel{
                 .add(lblGold)
                 .add(lblLifePointsTitle)
                 .add(lblLifePoints)
-                .add(lblMaxLifePointsTitle)
-                .add(lblMaxLifePoints)
                 .nextRow()
 
                 .resetGridWidth()
                 .add(lblReadiedSpellsTitle)
-                .setGridWidth(2)
                 .add(lblReadiedSpells)
-                .setGridWidth(1)
                 .add(lblMaxReadiedSpellsTitle)
-                .setGridWidth(2)
                 .add(lblMaxReadiedSpells)
                 .nextRow()
 
                 .resetGridWidth()
-                .setGridWidth(3)
+                .setGridWidth(2)
                 .add(btnOpenInventory)
                 .add(btnCastSpell)
                 ;
@@ -123,9 +113,8 @@ public class HeroPanel extends JPanel{
         lblAttackType.setText(hero.getAttackType().getName());
         lblDefenseType.setText(hero.getDefenseType().getName());
         lblGold.setText("" + hero.getGold());
-        lblLevel.setText("" + hero.getLevel());
-        lblLifePoints.setText("" + hero.getLifePoints());
-        lblMaxLifePoints.setText("" + hero.getMaxLifePoints());
+        lblLevel.setText("Level " + hero.getLevel());
+        lblLifePoints.setText(hero.getLifePoints() + "/" + hero.getMaxLifePoints());
         lblReadiedSpells.setText(hero.getReadiedSpells().stream().map(spell -> spell.getType().getName()).collect(Collectors.joining(", ")));
         lblMaxReadiedSpells.setText("" + hero.getMaxReadiedSpells());
     }

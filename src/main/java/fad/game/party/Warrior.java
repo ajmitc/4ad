@@ -11,6 +11,7 @@ public class Warrior extends Hero{
 
     public Warrior(){
         super();
+        setName("Aragorn");
         setType(HeroType.WARRIOR);
         setAttackType(AttackType.D6_PLUS_LEVEL);
         setHand1(new Weapon("Sword", WeaponAttackType.SLASHING));
